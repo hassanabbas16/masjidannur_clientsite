@@ -4,13 +4,14 @@ import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/use-toast"
-import { Loader2, CheckCircle, Phone, Mail, User, FileText, MessageSquare } from "lucide-react"
+import { Loader2, CheckCircle, Phone, Mail, User, FileText, MessageSquare, ArrowLeft } from "lucide-react"
 
 const formSchema = z.object({
   name: z
@@ -45,8 +46,9 @@ const formSchema = z.object({
     }),
 })
 
-export default function ResourcesPage() {
+export default function BecomeResourcePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,37 +63,70 @@ export default function ResourcesPage() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
-    const url = process.env.NEXT_PUBLIC_2_GOOGLE_APPS_SCRIPT_WEB_APP_URL
+    const googleUrl = process.env.NEXT_PUBLIC_2_GOOGLE_APPS_SCRIPT_WEB_APP_URL
 
-    if (!url) {
-      console.error("URL is not defined")
-      toast({
-        title: "Error",
-        description: "The URL is not defined. Please check your environment variables.",
-        variant: "destructive",
-      })
-      setIsSubmitting(false)
-      return
+    // Also save to our database for admin management
+    const saveToDatabase = async () => {
+      try {
+        const response = await fetch("/api/resources", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: values.name,
+            title: values.heading,
+            description: values.description,
+            email: values.email,
+            phone: values.phone,
+            isApproved: false,
+          }),
+        })
+
+        if (!response.ok) {
+          throw new Error("Failed to save to database")
+        }
+      } catch (error) {
+        console.error("Error saving to database:", error)
+        // Continue with Google submission even if database save fails
+      }
     }
 
-    const data = {
-      name: values.name,
-      email: values.email,
-      phone: values.phone,
-      heading: values.heading,
-      description: values.description,
+    // Send to Google Apps Script if URL is available
+    const sendToGoogle = async () => {
+      if (!googleUrl) {
+        console.warn("Google Apps Script URL is not defined")
+        return
+      }
+
+      const data = {
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        heading: values.heading,
+        description: values.description,
+      }
+
+      try {
+        await fetch(googleUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+      } catch (error) {
+        console.error("Error sending to Google:", error)
+        // Continue even if Google submission fails
+      }
     }
 
-    fetch(url, {
-      method: "POST",
-      mode: "no-cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
+    // Execute both operations
+    Promise.all([saveToDatabase(), sendToGoogle()])
       .then(() => {
         setIsSubmitting(false)
+        setIsSubmitted(true)
         toast({
           title: "Resource Submitted",
           description: "Your information has been sent for review.",
@@ -110,6 +145,36 @@ export default function ResourcesPage() {
       })
   }
 
+  if (isSubmitted) {
+    return (
+      <div className="flex flex-col min-h-screen bg-gradient-to-b from-green-50 to-white">
+        <section className="relative bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden">
+          <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>
+          <div className="container relative py-20 md:py-28 flex flex-col items-center text-center">
+            <h1 className="font-heading font-bold text-4xl md:text-5xl lg:text-6xl max-w-4xl mb-6">Thank You!</h1>
+            <p className="text-lg md:text-xl text-white/90 max-w-2xl">
+              Your submission has been received and is pending approval.
+            </p>
+          </div>
+        </section>
+
+        <section className="container px-4 md:px-6 py-12 md:py-24">
+          <div className="max-w-3xl mx-auto text-center">
+            <CheckCircle className="mx-auto h-16 w-16 text-green-600 mb-6" />
+            <h2 className="text-2xl font-bold mb-4">Submission Successful</h2>
+            <p className="text-muted-foreground mb-8">
+              We appreciate your interest in becoming a community resource. Our team will review your information and
+              get back to you soon.
+            </p>
+            <Button asChild className="bg-green-600 hover:bg-green-700">
+              <Link href="/resources">Return to Resources</Link>
+            </Button>
+          </div>
+        </section>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-green-50 to-white">
       <section className="relative bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden">
@@ -125,6 +190,11 @@ export default function ResourcesPage() {
       </section>
 
       <section className="container px-4 md:px-6 py-12 md:py-24">
+        <Link href="/resources" className="inline-flex items-center text-green-600 hover:underline mb-6">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Resources
+        </Link>
+
         <div className="max-w-3xl mx-auto">
           <Card className="border-0 shadow-xl bg-white">
             <CardHeader className="space-y-1">

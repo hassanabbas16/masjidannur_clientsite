@@ -11,6 +11,7 @@ export default function DonationConfirmationPage() {
   const [status, setStatus] = useState<"success" | "pending" | "failed" | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [amount, setAmount] = useState<string | null>(null)
+  const [donationType, setDonationType] = useState<string | null>(null)
   const searchParams = useSearchParams()
 
   useEffect(() => {
@@ -34,6 +35,14 @@ export default function DonationConfirmationPage() {
         if (!res.ok) throw new Error("Failed to fetch payment status")
         const data = await res.json()
 
+        if (data.metadata && data.metadata.donationType) {
+          setDonationType(data.metadata.donationType)
+        }
+
+        if (!amount && data.amount_received) {
+          setAmount(data.amount_received.toFixed(2))
+        }
+
         if (data.status === "succeeded") {
           setStatus("success")
         } else if (data.status === "processing" || data.status === "requires_capture") {
@@ -50,7 +59,7 @@ export default function DonationConfirmationPage() {
     }
 
     fetchPaymentStatus(paymentIntentId)
-  }, [searchParams])
+  }, [searchParams, amount])
 
   const statusConfig = {
     success: {
@@ -99,6 +108,11 @@ export default function DonationConfirmationPage() {
                 <p className="text-slate-600 mb-6">{statusConfig[status].description}</p>
                 {amount && status === "success" && (
                   <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                    {donationType && (
+                      <p className="text-green-800 mb-2">
+                        Donation Type: <span className="font-bold">{donationType}</span>
+                      </p>
+                    )}
                     <p className="text-green-800">
                       Donation Amount: <span className="font-bold">${amount}</span>
                     </p>

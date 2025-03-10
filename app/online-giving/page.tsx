@@ -1,49 +1,76 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import PaymentForm from "@/components/PaymentForm";
-import { ArrowLeft, ArrowRight, Heart, DollarSign, Mail, User, CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { loadStripe } from "@stripe/stripe-js"
+import { Elements } from "@stripe/react-stripe-js"
+import PaymentForm from "@/components/PaymentForm"
+import { parsePhoneNumberWithError } from 'libphonenumber-js'
+import { ArrowLeft, ArrowRight, Heart, DollarSign, Mail, User, CheckCircle2, Phone } from "lucide-react"
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
-const formSchema = z.object({
-  donationType: z.enum(["Zakat-ul-Maal", "Sadaqah", "General Fund", "Prison Dawah"], {
-    required_error: "Please select a donation type.",
-  }),
-  amount: z.string().regex(/^\d+(\.\d{1,2})?$/, "Please enter a valid amount (e.g., 10 or 10.50)"),
-  name: z.string().optional(),
-  email: z.string().email({ message: "Please enter a valid email address." }),
-  phone: z
-  .string()
-  .optional()
-  .refine(
-    (value) => !value || /^\d{3}[-\s]?\d{3}[-\s]?\d{4}$/.test(value),
-    { message: "Please enter a valid phone number (e.g., 123-456-7890)" }
-  ),
-  anonymous: z.boolean().default(false),
-  coverFees: z.boolean().default(false),
-}).refine((data) => data.anonymous || (data.name && data.name.trim() !== ""), {
-  message: "Name is required if not anonymous",
-  path: ["name"],
-});
+interface DonationType {
+  _id: string
+  name: string
+  icon: string
+}
 
-  
+const formSchema = z
+  .object({
+    donationType: z.string({
+      required_error: "Please select a donation type.",
+    }),
+    amount: z.string().regex(/^\d+(\.\d{1,2})?$/, "Please enter a valid amount (e.g., 10 or 10.50)"),
+    name: z.string().optional(),
+    email: z.string().email({ message: "Please enter a valid email address." }),
+    phone: z
+    .string()
+    .refine(
+      (value) => {
+        if (!value) return true
+        try {
+          const phoneNumber = parsePhoneNumberWithError(value)
+          return phoneNumber.isValid()
+        } catch {
+          return false
+        }
+      },
+      {
+        message: "Please enter a valid international phone number",
+      }
+    ),
+    anonymous: z.boolean().default(false),
+    coverFees: z.boolean().default(true),
+  })
+  .refine((data) => data.anonymous || (data.name && data.name.trim() !== ""), {
+    message: "Name is required if not anonymous",
+    path: ["name"],
+  })
+
+const formatCurrency = (value: number) => 
+  new Intl.NumberFormat('en-US', { 
+    style: 'currency', 
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(value)
 
 export default function OnlineGivingPage() {
-  const [step, setStep] = useState(1);
-  const [clientSecret, setClientSecret] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  const [step, setStep] = useState(1)
+  const [clientSecret, setClientSecret] = useState("")
+  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const [donationTypes, setDonationTypes] = useState<DonationType[]>([])
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,85 +78,91 @@ export default function OnlineGivingPage() {
       amount: "",
       name: "",
       email: "",
+      phone: "",
       anonymous: false,
       coverFees: true,
     },
-  });
+  })
+
+  useEffect(() => {
+    const fetchDonationTypes = async () => {
+      try {
+        const response = await fetch("/api/donation-types")
+        if (response.ok) {
+          const data = await response.json()
+          setDonationTypes(data)
+          if (data.length > 0) {
+            form.setValue("donationType", data[0].name)
+          }
+        } else {
+          console.error("Failed to fetch donation types")
+        }
+      } catch (error) {
+        console.error("Error fetching donation types:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDonationTypes()
+  }, [form])
 
   const handleNextStep1 = async () => {
-    const isValid = await form.trigger(["donationType", "amount"]);
-    if (isValid) setStep(2);
-  };
+    const isValid = await form.trigger(["donationType", "amount"])
+    if (isValid) setStep(2)
+  }
 
   const calculateTotal = (amount: string) => {
-    const donationAmount = Number.parseFloat(amount);
-    if (isNaN(donationAmount) || donationAmount <= 0) return 0;
-    if (!form.watch("coverFees")) return donationAmount;
-    const totalWithFees = (donationAmount + 0.3) / (1 - 0.029);
-    return totalWithFees;
-  };
+    const donationAmount = Number.parseFloat(amount)
+    if (isNaN(donationAmount) || donationAmount <= 0) return 0
+    if (!form.watch("coverFees")) return donationAmount
+    const totalWithFees = (donationAmount + 0.3) / (1 - 0.029)
+    return totalWithFees
+  }
 
   const calculateFees = (amount: string) => {
-    const donationAmount = Number.parseFloat(amount);
-    if (isNaN(donationAmount) || donationAmount <= 0) return 0;
-    const totalWithFees = calculateTotal(amount);
-    return totalWithFees - donationAmount;
-  };
-  const handlePaymentSuccess = async () => {
-    try {
-      // Assume `form` has all necessary data
-      const formValues = form.getValues();
-  
-      // Send the donation confirmation details to your server or email service
-      await fetch("/api/send-donation-confirmation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          donationType: formValues.donationType,
-          amount: formValues.amount,
-          name: formValues.name,
-          email: formValues.email,
-          anonymous: formValues.anonymous,
-          coverFees: formValues.coverFees,
-        }),
-      });
-  
-      // Optionally, you can display a success message or update UI to indicate the donation was successful
-      setStep(4); // This will allow you to display a "Thank You" page or confirmation view.
-    } catch (error) {
-      console.error("Error during payment success handling:", error);
-      setErrorMessage("There was an error processing your donation. Please try again later.");
-    }
-  };
-  
+    const donationAmount = Number.parseFloat(amount)
+    if (isNaN(donationAmount) || donationAmount <= 0) return 0
+    const totalWithFees = calculateTotal(amount)
+    return totalWithFees - donationAmount
+  }
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (step === 2) {
       try {
+        setSubmitting(true)
         const response = await fetch("/api/create-payment-intent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(values),
-        });
+        })
 
-        if (!response.ok) throw new Error("Error processing the payment. Please try again.");
-        const data = await response.json();
-        if (!data.clientSecret) throw new Error("Invalid response from payment API.");
+        if (!response.ok) throw new Error("Error processing the payment. Please try again.")
+        const data = await response.json()
+        if (!data.clientSecret) throw new Error("Invalid response from payment API.")
 
-        setClientSecret(data.clientSecret);
-        setStep(3);
+        setClientSecret(data.clientSecret)
+        setStep(3)
       } catch (error) {
-        setErrorMessage(error instanceof Error ? error.message : "An unknown error occurred. Please try again.");
+        setErrorMessage(error instanceof Error ? error.message : "An unknown error occurred. Please try again.")
+      } finally {
+        setSubmitting(false)
       }
     }
   }
 
   const donationTypeIcons = {
-    "Zakat-ul-Maal": <DollarSign className="h-5 w-5 text-emerald-600" />,
-    Sadaqah: <Heart className="h-5 w-5 text-rose-600" />,
-    "General Fund": <DollarSign className="h-5 w-5 text-blue-600" />,
-    "Prison Dawah": <Heart className="h-5 w-5 text-purple-600" />,
-  };
+    DollarSign: <DollarSign className="h-5 w-5 text-emerald-600" />,
+    Heart: <Heart className="h-5 w-5 text-rose-600" />,
+  }
 
+  if (loading) {
+    return (
+      <div className="container px-4 md:px-6 py-12 bg-gradient-to-b from-slate-50 to-white min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="container px-4 md:px-6 py-12 bg-gradient-to-b from-slate-50 to-white min-h-screen">
@@ -141,7 +174,7 @@ export default function OnlineGivingPage() {
           </p>
         </div>
 
-        <div className="mb-8">
+        <div className="relative mb-8">
           <div className="flex items-center justify-between max-w-md mx-auto">
             {[1, 2, 3].map((i) => (
               <div key={i} className="flex flex-col items-center">
@@ -157,11 +190,12 @@ export default function OnlineGivingPage() {
                 </span>
               </div>
             ))}
+          </div>
+          <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 h-[2px] bg-muted -z-10">
             <div
-              className={`h-1 w-24 ${step >= 2 ? "bg-primary" : "bg-muted"} absolute left-1/2 -translate-x-24 top-5 -z-10`}
-            ></div>
-            <div
-              className={`h-1 w-24 ${step >= 3 ? "bg-primary" : "bg-muted"} absolute left-1/2 translate-x-0 top-5 -z-10`}
+              className={`h-full bg-primary transition-all duration-300 ${
+                step >= 2 ? "w-2/3" : step >= 3 ? "w-full" : "w-1/3"
+              }`}
             ></div>
           </div>
         </div>
@@ -200,28 +234,29 @@ export default function OnlineGivingPage() {
                               defaultValue={field.value}
                               className="grid grid-cols-1 md:grid-cols-2 gap-3"
                             >
-                              {["Zakat-ul-Maal", "Sadaqah", "General Fund", "Prison Dawah"].map((option) => (
-                                <FormItem key={option} className="flex items-center space-x-3 space-y-0">
+                              {donationTypes.map((type) => (
+                                <FormItem key={type._id} className="flex items-center space-x-3 space-y-0">
                                   <FormControl>
-                                    <RadioGroupItem value={option} id={option} className="peer sr-only" />
+                                    <RadioGroupItem value={type.name} id={type.name} className="peer sr-only" />
                                   </FormControl>
                                   <label
-                                    htmlFor={option}
+                                    htmlFor={type.name}
                                     className={`flex items-center justify-between w-full p-4 bg-white border rounded-lg cursor-pointer transition-all ${
-                                      field.value === option
+                                      field.value === type.name
                                         ? "border-primary ring-2 ring-offset-2 ring-primary/50 bg-primary/5"
                                         : "border-slate-200 hover:bg-slate-50"
                                     }`}
                                   >
                                     <div className="flex items-center">
                                       <div className="mr-3">
-                                        {donationTypeIcons[option as keyof typeof donationTypeIcons]}
+                                        {donationTypeIcons[type.icon as keyof typeof donationTypeIcons] || 
+                                          donationTypeIcons["DollarSign"]}
                                       </div>
-                                      <div className="font-medium">{option}</div>
+                                      <div className="font-medium">{type.name}</div>
                                     </div>
                                     <CheckCircle2
                                       className={`h-5 w-5 text-primary ${
-                                        field.value === option ? "opacity-100" : "opacity-0"
+                                        field.value === type.name ? "opacity-100" : "opacity-0"
                                       }`}
                                     />
                                   </label>
@@ -277,6 +312,7 @@ export default function OnlineGivingPage() {
                     </div>
                   </>
                 )}
+
                 {step === 2 && (
                   <>
                     <div className="bg-slate-50 p-4 rounded-lg mb-6">
@@ -286,7 +322,7 @@ export default function OnlineGivingPage() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-slate-600">Amount:</span>
-                        <span className="font-medium">${form.watch("amount")}</span>
+                        <span className="font-medium">{formatCurrency(Number(form.watch("amount")))}</span>
                       </div>
                     </div>
 
@@ -352,6 +388,25 @@ export default function OnlineGivingPage() {
 
                     <FormField
                       control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base font-medium">Phone</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <Phone className="h-4 w-4 text-slate-500" />
+                              </div>
+                              <Input placeholder="123-456-7890" {...field} className="pl-10" />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
                       name="coverFees"
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
@@ -375,31 +430,43 @@ export default function OnlineGivingPage() {
                     <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-slate-700">Your donation:</span>
-                        <span className="font-medium">${form.watch("amount")}</span>
+                        <span className="font-medium">{formatCurrency(Number(form.watch("amount")))}</span>
                       </div>
 
                       {form.watch("coverFees") && (
                         <>
                           <div className="flex justify-between items-center mb-2 text-sm text-slate-600">
                             <span>Processing fees:</span>
-                            <span>${calculateFees(form.watch("amount")).toFixed(2)}</span>
+                            <span>{formatCurrency(calculateFees(form.watch("amount")))}</span>
                           </div>
                           <div className="border-t pt-2 mt-2 flex justify-between items-center font-medium">
                             <span>Total charge:</span>
-                            <span className="text-lg">${calculateTotal(form.watch("amount")).toFixed(2)}</span>
+                            <span className="text-lg">{formatCurrency(calculateTotal(form.watch("amount")))}</span>
                           </div>
                         </>
                       )}
                     </div>
 
-                    <div className="flex justify-between pt-4">
-                      <Button type="button" variant="outline" onClick={() => setStep(1)}>
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back
+                    <div className="flex flex-col xs:flex-row gap-2 xs:gap-4 justify-between pt-4">
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => setStep(1)}
+                        className="w-full xs:w-auto justify-center xs:justify-start"
+                      >
+                        <ArrowLeft className="mr-1 xs:mr-2 h-4 w-4 shrink-0" />
+                        <span className="truncate">Back</span>
                       </Button>
-                      <Button type="submit">
-                        Proceed to Payment
-                        <ArrowRight className="ml-2 h-4 w-4" />
+
+                      <Button 
+                        type="submit" 
+                        disabled={submitting}
+                        className="w-full xs:w-auto justify-center xs:justify-end"
+                      >
+                        <span className="truncate">
+                          {submitting ? 'Processing...' : 'Proceed to Payment'}
+                        </span>
+                        <ArrowRight className="ml-1 xs:ml-2 h-4 w-4 shrink-0" />
                       </Button>
                     </div>
                   </>
@@ -414,22 +481,22 @@ export default function OnlineGivingPage() {
                       </div>
                       <div className="flex justify-between items-center mb-2">
                         <span className="text-sm text-slate-600">Amount:</span>
-                        <span className="font-medium">${form.watch("amount")}</span>
+                        <span className="font-medium">{formatCurrency(Number(form.watch("amount")))}</span>
                       </div>
                       {form.watch("coverFees") && (
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-sm text-slate-600">Processing fees:</span>
-                          <span className="text-sm">${calculateFees(form.watch("amount")).toFixed(2)}</span>
+                          <span className="text-sm">{formatCurrency(calculateFees(form.watch("amount")))}</span>
                         </div>
                       )}
                       <div className="border-t pt-2 mt-2 flex justify-between items-center font-medium">
                         <span>Total:</span>
-                        <span className="text-lg">${calculateTotal(form.watch("amount")).toFixed(2)}</span>
+                        <span className="text-lg">{formatCurrency(calculateTotal(form.watch("amount")))}</span>
                       </div>
                     </div>
 
                     <Elements stripe={stripePromise} options={{ clientSecret }}>
-                      <PaymentForm setErrorMessage={setErrorMessage} onPaymentSuccess={handlePaymentSuccess} />
+                      <PaymentForm setErrorMessage={setErrorMessage} />
                     </Elements>
 
                     <Button type="button" variant="outline" onClick={() => setStep(2)} className="mt-4">
@@ -467,9 +534,9 @@ export default function OnlineGivingPage() {
 
         <div className="mt-8 text-center text-sm text-slate-500">
           <p>Need help? Contact our support team at support@example.com</p>
-          <p className="mt-2">© {new Date().getFullYear()} Your Organization. All rights reserved.</p>
+          <p className="mt-2">© {new Date().getFullYear()} Masjid AnNoor. All rights reserved.</p>
         </div>
       </div>
     </div>
-  );
+  )
 }
