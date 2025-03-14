@@ -13,6 +13,12 @@ import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Switch } from "@/components/ui/switch"
 import { format } from "date-fns"
+import { ImageUpload } from "@/components/ui/image-upload"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import * as z from "zod"
+import { eventFormSchema } from "@/lib/validations/event"
 
 interface EventFormProps {
   initialData?: {
@@ -35,67 +41,63 @@ interface EventFormProps {
 export default function EventForm({ initialData, isEditing = false }: EventFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formData, setFormData] = useState({
-    title: initialData?.title || "",
-    description: initialData?.description || "",
-    date: initialData?.date ? new Date(initialData.date) : new Date(),
-    endDate: initialData?.endDate ? new Date(initialData.endDate) : new Date(),
-    location: initialData?.location || "",
-    image: initialData?.image || "/placeholder.svg?height=400&width=600",
-    category: initialData?.category || [],
-    organizer: initialData?.organizer || "",
-    contactEmail: initialData?.contactEmail || "",
-    additionalDetails: initialData?.additionalDetails || "",
-    isVisible: initialData?.isVisible ?? true,
+  
+  const today = new Date()
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+
+  const form = useForm<z.infer<typeof eventFormSchema>>({
+    resolver: zodResolver(eventFormSchema),
+    defaultValues: {
+      title: initialData?.title || "",
+      description: initialData?.description || "",
+      date: initialData?.date || today.toISOString(),
+      endDate: initialData?.endDate || tomorrow.toISOString(),
+      location: initialData?.location || "",
+      category: initialData?.category || [],
+      organizer: initialData?.organizer || "",
+      contactEmail: initialData?.contactEmail || "",
+      image: initialData?.image || "",
+      isVisible: initialData?.isVisible ?? true,
+      additionalDetails: initialData?.additionalDetails || "",
+    },
   })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const watchedValues = form.watch()
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleDateChange = (name: string, date: Date | undefined) => {
+  const handleDateChange = (name: "date" | "endDate", date: Date | undefined) => {
     if (date) {
-      setFormData((prev) => ({ ...prev, [name]: date }))
+      form.setValue(name, date.toISOString())
     }
   }
 
   const handleCategoryChange = (category: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      category: prev.category.includes(category)
-        ? prev.category.filter((c) => c !== category)
-        : [...prev.category, category],
-    }))
+    const currentCategories = form.getValues("category") || []
+    const newCategories = currentCategories.includes(category)
+      ? currentCategories.filter((c) => c !== category)
+      : [...currentCategories, category]
+    form.setValue("category", newCategories)
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-
+  const onSubmit = async (data: z.infer<typeof eventFormSchema>) => {
     try {
+      setIsSubmitting(true)
       const url = isEditing ? `/api/events/${initialData?._id}` : "/api/events"
-
-      const method = isEditing ? "PUT" : "POST"
-
+      
       const response = await fetch(url, {
-        method,
+        method: isEditing ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       })
 
-      if (response.ok) {
-        router.push("/admin/events")
-        router.refresh()
-      } else {
-        console.error("Failed to save event")
+      if (!response.ok) {
+        throw new Error("Failed to save event")
       }
+
+      router.push("/admin/events")
+      router.refresh()
     } catch (error) {
       console.error("Error saving event:", error)
     } finally {
@@ -106,181 +108,252 @@ export default function EventForm({ initialData, isEditing = false }: EventFormP
   const categories = ["Worship", "Community", "Education", "Youth", "Charity", "Family", "Other"]
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Card>
-        <CardHeader>
-          <CardTitle>{isEditing ? "Edit Event" : "Create New Event"}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Label htmlFor="title">Event Title</Label>
-              <Input id="title" name="title" value={formData.title} onChange={handleChange} required className="w-full" />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Categories</Label>
-              <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <Button
-                    key={category}
-                    type="button"
-                    variant={formData.category.includes(category) ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleCategoryChange(category)}
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Start Date & Time</Label>
-              <div className="flex gap-4 flex-wrap md:flex-nowrap">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full sm:w-auto justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.date ? format(formData.date, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={formData.date}
-                      onSelect={(date) => handleDateChange("date", date)}
-                      initialFocus
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>{isEditing ? "Edit Event" : "Create New Event"}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <FormField
+              control={form.control}
+              name="image"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Event Image</FormLabel>
+                  <FormControl>
+                    <ImageUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                      onRemove={() => field.onChange("")}
+                      disabled={isSubmitting}
                     />
-                  </PopoverContent>
-                </Popover>
-                <Input
-                  type="time"
-                  value={format(formData.date, "HH:mm")}
-                  onChange={(e) => {
-                    const [hours, minutes] = e.target.value.split(":")
-                    const newDate = new Date(formData.date)
-                    newDate.setHours(Number.parseInt(hours), Number.parseInt(minutes))
-                    handleDateChange("date", newDate)
-                  }}
-                  className="w-24"
-                />
-              </div>
-            </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <div className="space-y-2">
-              <Label>End Date & Time</Label>
-              <div className="flex gap-4 flex-wrap md:flex-nowrap">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full sm:w-auto justify-start text-left font-normal">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.endDate ? format(formData.endDate, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={formData.endDate}
-                      onSelect={(date) => handleDateChange("endDate", date)}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                <Input
-                  type="time"
-                  value={format(formData.endDate, "HH:mm")}
-                  onChange={(e) => {
-                    const [hours, minutes] = e.target.value.split(":")
-                    const newDate = new Date(formData.endDate)
-                    newDate.setHours(Number.parseInt(hours), Number.parseInt(minutes))
-                    handleDateChange("endDate", newDate)
-                  }}
-                  className="w-24"
-                />
-              </div>
-            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event Title</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
+              <FormField
+                control={form.control}
+                name="category"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Categories</FormLabel>
+                    <div className="flex flex-wrap gap-2">
+                      {categories.map((category) => (
+                        <Button
+                          key={category}
+                          type="button"
+                          variant={watchedValues.category?.includes(category) ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => handleCategoryChange(category)}
+                        >
+                          {category}
+                        </Button>
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="space-y-2">
-              <Label htmlFor="location">Location</Label>
-              <Input id="location" name="location" value={formData.location} onChange={handleChange} required className="w-full" />
-            </div>
+              <FormField
+                control={form.control}
+                name="date"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Start Date & Time</FormLabel>
+                    <div className="flex gap-4 flex-wrap md:flex-nowrap">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full sm:w-auto justify-start text-left font-normal">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? format(new Date(field.value), "PPP") : <span>Pick a date</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={(date) => handleDateChange("date", date)}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <Input
+                        type="time"
+                        value={field.value ? format(new Date(field.value), "HH:mm") : "00:00"}
+                        onChange={(e) => {
+                          const [hours, minutes] = e.target.value.split(":")
+                          const date = field.value ? new Date(field.value) : new Date()
+                          date.setHours(Number(hours), Number(minutes))
+                          handleDateChange("date", date)
+                        }}
+                        className="w-24"
+                      />
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="space-y-2">
-              <Label htmlFor="image">Image URL</Label>
-              <Input id="image" name="image" value={formData.image} onChange={handleChange} className="w-full" />
-            </div>
+              <FormField
+                control={form.control}
+                name="endDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>End Date & Time</FormLabel>
+                    <div className="flex gap-4 flex-wrap md:flex-nowrap">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full sm:w-auto justify-start text-left font-normal">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {field.value ? format(new Date(field.value), "PPP") : <span>Pick a date</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={field.value ? new Date(field.value) : undefined}
+                            onSelect={(date) => handleDateChange("endDate", date)}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <Input
+                        type="time"
+                        value={field.value ? format(new Date(field.value), "HH:mm") : "00:00"}
+                        onChange={(e) => {
+                          const [hours, minutes] = e.target.value.split(":")
+                          const date = field.value ? new Date(field.value) : new Date()
+                          date.setHours(Number(hours), Number(minutes))
+                          handleDateChange("endDate", date)
+                        }}
+                        className="w-24"
+                      />
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="space-y-2">
-              <Label htmlFor="organizer">Organizer</Label>
-              <Input id="organizer" name="organizer" value={formData.organizer} onChange={handleChange} required className="w-full" />
-            </div>
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="space-y-2">
-              <Label htmlFor="contactEmail">Contact Email</Label>
-              <Input
-                id="contactEmail"
+              <FormField
+                control={form.control}
+                name="organizer"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Organizer</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="contactEmail"
-                type="email"
-                value={formData.contactEmail}
-                onChange={handleChange}
-                required
-                className="w-full"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contact Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
+            <FormField
+              control={form.control}
               name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={4}
-              required
-              className="w-full"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} rows={4} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="additionalDetails">Additional Details</Label>
-            <Textarea
-              id="additionalDetails"
+            <FormField
+              control={form.control}
               name="additionalDetails"
-              value={formData.additionalDetails}
-              onChange={handleChange}
-              rows={4}
-              className="w-full"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Additional Details</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} rows={4} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="isVisible"
-              checked={formData.isVisible}
-              onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, isVisible: checked }))} 
+            <FormField
+              control={form.control}
+              name="isVisible"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-2">
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel>Event Visible</FormLabel>
+                </FormItem>
+              )}
             />
-            <Label htmlFor="isVisible">Event Visible</Label>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button type="button" variant="outline" onClick={() => router.push("/admin/events")}>
-            Cancel
-          </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
-                {isEditing ? "Updating..." : "Creating..."}
-              </>
-            ) : (
-              <>{isEditing ? "Update Event" : "Create Event"}</>
-            )}
-          </Button>
-        </CardFooter>
-      </Card>
-    </form>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button type="button" variant="outline" onClick={() => router.push("/admin/events")}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
+                  {isEditing ? "Updating..." : "Creating..."}
+                </>
+              ) : (
+                <>{isEditing ? "Update Event" : "Create Event"}</>
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
   )
 }

@@ -14,7 +14,8 @@ import { loadStripe } from "@stripe/stripe-js"
 import { Elements } from "@stripe/react-stripe-js"
 import PaymentForm from "@/components/PaymentForm"
 import { parsePhoneNumberWithError } from 'libphonenumber-js'
-import { ArrowLeft, ArrowRight, Heart, DollarSign, Mail, User, CheckCircle2, Phone } from "lucide-react"
+import { ArrowLeft, ArrowRight, Heart, DollarSign, Mail, User, CheckCircle2, Phone, Loader2 } from "lucide-react"
+import { toast } from "react-hot-toast"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -22,6 +23,10 @@ interface DonationType {
   _id: string
   name: string
   icon: string
+}
+
+interface PaymentIntentResponse {
+  clientSecret: string
 }
 
 const formSchema = z
@@ -33,21 +38,21 @@ const formSchema = z
     name: z.string().optional(),
     email: z.string().email({ message: "Please enter a valid email address." }),
     phone: z
-    .string()
-    .refine(
-      (value) => {
-        if (!value) return true
-        try {
-          const phoneNumber = parsePhoneNumberWithError(value)
-          return phoneNumber.isValid()
-        } catch {
-          return false
+      .string()
+      .refine(
+        (value) => {
+          if (!value) return true
+          try {
+            const phoneNumber = parsePhoneNumberWithError(value)
+            return phoneNumber.isValid()
+          } catch {
+            return false
+          }
+        },
+        {
+          message: "Please enter a valid international phone number",
         }
-      },
-      {
-        message: "Please enter a valid international phone number",
-      }
-    ),
+      ),
     anonymous: z.boolean().default(false),
     coverFees: z.boolean().default(true),
   })
@@ -127,21 +132,27 @@ export default function OnlineGivingPage() {
     return totalWithFees - donationAmount
   }
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     if (step === 2) {
       try {
         setSubmitting(true)
         const response = await fetch("/api/create-payment-intent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(values),
+          body: JSON.stringify(formData),
         })
 
-        if (!response.ok) throw new Error("Error processing the payment. Please try again.")
-        const data = await response.json()
-        if (!data.clientSecret) throw new Error("Invalid response from payment API.")
+        if (response.status === 429) {
+          toast.error("Too many payment attempts. Please wait 5 minutes before trying again.")
+          return
+        }
 
-        setClientSecret(data.clientSecret)
+        if (!response.ok) throw new Error("Error processing the payment. Please try again.")
+        
+        const responseData: PaymentIntentResponse = await response.json()
+        if (!responseData.clientSecret) throw new Error("Invalid response from payment API.")
+
+        setClientSecret(responseData.clientSecret)
         setStep(3)
       } catch (error) {
         setErrorMessage(error instanceof Error ? error.message : "An unknown error occurred. Please try again.")

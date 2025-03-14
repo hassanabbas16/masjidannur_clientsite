@@ -24,10 +24,30 @@
   import { loadStripe } from "@stripe/stripe-js"
   import { Elements } from "@stripe/react-stripe-js"
   import PaymentForm from "@/components/PaymentForm"
+  import { Switch } from "@/components/ui/switch"
 
   const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
+  // Add rate limiting store
+  const rateLimit = new Map()
 
+  // Rate limit function
+  function checkRateLimit(email: string): boolean {
+    const now = Date.now()
+    const windowMs = 5 * 60 * 1000 // 5 minutes
+    const maxRequests = 3 // 3 requests per window
+
+    const userRequests = rateLimit.get(email) || []
+    const recentRequests = userRequests.filter((timestamp: number) => now - timestamp < windowMs)
+
+    if (recentRequests.length >= maxRequests) {
+      return false
+    }
+
+    recentRequests.push(now)
+    rateLimit.set(email, recentRequests)
+    return true
+  }
 
   interface RamadanDate {
     _id: string
@@ -52,6 +72,14 @@
     aboutDescription: string
     additionalInfo: string[]
     isActive: boolean
+    iftarEnabled: boolean
+  }
+
+  interface ConfirmationDetails {
+    date: Date | null;
+    amount: number;
+    name: string;
+    email: string;
   }
 
   export default function SponsorIftarPage() {
@@ -75,24 +103,20 @@
         .string()
         .min(10, { message: "Please enter a valid phone number." })
         .regex(/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number."),
-      amount: z
-        .string()
-        .regex(/^\d+(\.\d{1,2})?$/, "Please enter a valid amount (e.g., 10 or 10.50)")
-        .refine(
-          (val) => Number.parseFloat(val) >= (settings?.iftarCost ?? 500),
-          (val) => ({
-            message: `Amount must be $${settings?.iftarCost ?? 500} or more`,
-          })
-        ),
+      amount: settings?.iftarEnabled 
+        ? z.string()
+          .regex(/^\d+(\.\d{1,2})?$/, "Please enter a valid amount (e.g., 10 or 10.50)")
+          .refine(
+            (val) => Number.parseFloat(val) >= (settings?.iftarCost ?? 500),
+            (val) => ({
+              message: `Amount must be $${settings?.iftarCost ?? 500} or more`,
+            })
+          )
+        : z.string().optional().default("0"),
       coverFees: z.boolean().default(false),
     })
 
-    const [confirmationDetails, setConfirmationDetails] = useState<{
-      name: string
-      email: string
-      amount: string
-      date: Date
-    } | null>(null)
+    const [confirmationDetails, setConfirmationDetails] = useState<ConfirmationDetails | null>(null)
 
     const formMethods = useForm({
       resolver: zodResolver(formSchema),
@@ -162,7 +186,8 @@
       }
     }
 
-    const calculateTotal = (amount: string) => {
+    const calculateTotal = (amount: string | undefined) => {
+      if (!amount) return 0;
       const donationAmount = Number.parseFloat(amount)
       if (isNaN(donationAmount) || donationAmount <= 0) return 0
       if (!formMethods.watch("coverFees")) return donationAmount
@@ -171,11 +196,51 @@
     }
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-      if (!selectedDate) return
-
-      setIsSubmitting(true)
+      if (!selectedDate) return;
+      setIsSubmitting(true);
 
       try {
+        // If iftar cost is disabled (free), submit directly without payment
+        if (!settings?.iftarEnabled) {
+          const selectedDay = ramadanDates.find(
+            (day) => new Date(day.date).toDateString() === selectedDate.toDateString()
+          );
+
+          if (!selectedDay) {
+            throw new Error("Selected date not found");
+          }
+
+          const response = await fetch(`/api/ramadan-dates/${selectedDay._id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...selectedDay,
+              available: false,
+              sponsorName: values.name,
+              name: values.name,
+              email: values.email,
+              phone: values.phone,
+              status: "completed"
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to submit sponsorship");
+          }
+
+          setIsDialogOpen(false);
+          router.push("/ramadan");
+          return;
+        }
+
+        // Add rate limiting check for paid sponsorships
+        if (!checkRateLimit(values.email)) {
+          setErrorMessage("Too many payment attempts. Please try again in 5 minutes.");
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Only proceed with payment if iftarEnabled is true
         const response = await fetch("/api/create-payment-intent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -188,77 +253,94 @@
             anonymous: false,
             coverFees: values.coverFees,
             date: selectedDate.toISOString(),
+            dateId: ramadanDates.find(
+              (day) => new Date(day.date).toDateString() === selectedDate.toDateString()
+            )?._id,
+            sponsorName: values.name
           }),
-        })
+        });
 
-        const data = await response.json()
+        const data = await response.json();
+
+        if (response.status === 429) {
+          setErrorMessage("Too many payment attempts. Please try again in 5 minutes.");
+          return;
+        }
 
         if (data.clientSecret) {
-          setClientSecret(data.clientSecret)
-          setIsDialogOpen(false)
-          setShowPaymentForm(true)
+          setClientSecret(data.clientSecret);
+          setIsDialogOpen(false);
+          setShowPaymentForm(true);
         } else {
-          throw new Error("Failed to create payment intent")
+          throw new Error(data.error || "Failed to create payment intent");
         }
       } catch (error) {
-        console.error("Error:", error)
-        setErrorMessage(error instanceof Error ? error.message : "An unknown error occurred")
+        console.error("Error:", error);
+        setErrorMessage(error instanceof Error ? error.message : "An unknown error occurred");
+      } finally {
+        setIsSubmitting(false);
       }
-
-      setIsSubmitting(false)
     }
 
-    function handlePaymentSuccess() {
-      const formValues = formMethods.getValues()
-      if (selectedDate) {
-        updateDateSponsorship(selectedDate, formValues.name)
-
-        setConfirmationDetails({
-          name: formValues.name,
-          email: formValues.email,
-          amount: formValues.amount,
-          date: selectedDate,
-        })
-
-        fetch("/api/send-iftar-confirmation", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: formValues.name,
-            email: formValues.email,
-            amount: formValues.amount,
-            date: selectedDate.toISOString(),
-          }),
-        }).catch((error) => console.error("Failed to send confirmation email:", error))
-      }
-
-      formMethods.reset()
-      setSelectedDate(undefined)
-      setShowPaymentForm(false)
-      fetchDates()
-    }
-
-    const updateDateSponsorship = async (date: Date, sponsorName: string) => {
+    const handlePaymentSuccess = async (paymentIntentId: string) => {
       try {
-        const selectedDay = ramadanDates.find((day) => new Date(day.date).toDateString() === date.toDateString())
+        const response = await fetch(`/api/payment-status?payment_intent=${paymentIntentId}`);
+        const data = await response.json();
 
-        if (!selectedDay) return
+        if (data.status === "succeeded" && selectedDate) {
+          // Find the selected date in ramadanDates
+          const selectedDay = ramadanDates.find(
+            (day) => new Date(day.date).toDateString() === selectedDate.toDateString()
+          );
 
-        await fetch(`/api/ramadan-dates/${selectedDay._id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...selectedDay,
-            available: false,
-            sponsorName: sponsorName,
-          }),
-        })
+          if (!selectedDay) {
+            throw new Error("Selected date not found");
+          }
+
+          // Update the database directly, similar to free iftar logic
+          await fetch(`/api/ramadan-dates/${selectedDay._id}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              available: false,
+              sponsorName: formMethods.getValues("name") || "Anonymous",
+            }),
+          });
+
+          // Update the local state
+          const updatedDates = ramadanDates.map(date => {
+            if (date._id === selectedDay._id) {
+              return {
+                ...date,
+                available: false,
+                sponsorName: formMethods.getValues("name") || "Anonymous"
+              };
+            }
+            return date;
+          });
+          setRamadanDates(updatedDates);
+
+          // Show success confirmation
+          setConfirmationDetails({
+            date: selectedDate,
+            amount: settings?.iftarCost ?? 0,
+            name: formMethods.getValues("name") || "Anonymous",
+            email: formMethods.getValues("email")
+          });
+
+          // Reset form and close dialog
+          formMethods.reset();
+          setIsDialogOpen(false);
+        } else {
+          setErrorMessage("Payment was not successful. Please try again.");
+        }
       } catch (error) {
-        console.error("Error updating date sponsorship:", error)
+        console.error("Error verifying payment:", error);
+        setErrorMessage("An error occurred while processing your payment.");
       }
-    }
+    };
 
     if (loading) {
       return (
@@ -399,13 +481,15 @@
 
                       {(!settings?.additionalInfo || settings?.additionalInfo?.length === 0) && (
                         <>
-                          <div className="flex items-start gap-2">
-                            <InfoIcon className="h-4 w-4 mt-0.5 text-primary" />
-                            <p className="text-xs md:text-sm">
+                          {settings?.iftarEnabled && (
+                            <div className="flex items-start gap-2">
+                              <InfoIcon className="h-4 w-4 mt-0.5 text-primary" />
+                              <p className="text-xs md:text-sm">
                               The cost to sponsor an iftar is ${settings?.iftarCost || 500}, which covers food and drinks
-                              for approximately {settings?.iftarCapacity || 100} people.
-                            </p>
-                          </div>
+                                for approximately {settings?.iftarCapacity || 100} people.
+                              </p>
+                            </div>
+                          )}
 
                           <div className="flex items-start gap-2">
                             <InfoIcon className="h-4 w-4 mt-0.5 text-primary" />
@@ -502,89 +586,46 @@
                       )}
                     />
 
-                    <FormField
-                      control={formMethods.control}
-                      name="amount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">Amount ($)</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                min={settings?.iftarCost || 500}
-                                placeholder={(settings?.iftarCost || 500).toString()}
-                                className="pl-8 text-sm"
-                                {...field}
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage className="text-xs" />
-                        </FormItem>
-                      )}
-                    />
+                    {settings?.iftarEnabled ? (
+                      <>
+                        <FormField
+                          control={formMethods.control}
+                          name="amount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Amount ($)</FormLabel>
+                              <FormControl>
+                                <Input type="number" step="0.01" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
 
-                    <FormField
-                      control={formMethods.control}
-                      name="coverFees"
-                      render={({ field }) => {
-                        const baseAmount = Number.parseFloat(formMethods.watch("amount") || "0")
-                        const withFees = baseAmount > 0 ? (baseAmount + 0.3) / (1 - 0.029) : 0
-                        const feesAmount = withFees - baseAmount
+                        <FormField
+                          control={formMethods.control}
+                          name="coverFees"
+                          render={({ field }) => (
+                            <FormItem className="flex items-center space-x-2">
+                              <FormControl>
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                              </FormControl>
+                              <FormLabel className="!mt-0">Cover processing fees</FormLabel>
+                            </FormItem>
+                          )}
+                        />
 
-                        return (
-                          <FormItem className="space-y-4 pt-2 pb-2">
-                            <div className="bg-secondary/50 p-3 rounded-lg border border-border/50">
-                              <div className="flex items-start gap-3">
-                                <div className="flex h-5 items-center">
-                                  <FormControl>
-                                    <input
-                                      type="checkbox"
-                                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                                      checked={field.value}
-                                      onChange={(e) => field.onChange(e.target.checked)}
-                                      id="cover-fees"
-                                    />
-                                  </FormControl>
-                                </div>
-                                <div className="flex-1">
-                                  <FormLabel htmlFor="cover-fees" className="text-sm font-medium cursor-pointer">
-                                    Cover Transaction Fees
-                                  </FormLabel>
-                                  <p className="text-xs text-muted-foreground mt-1">
-                                    Stripe charges 2.9% + $0.30 per transaction.
-                                  </p>
-                                </div>
-                              </div>
-
-                              {baseAmount > 0 && (
-                                <div className="mt-3 space-y-2 text-xs">
-                                  <div className="flex justify-between">
-                                    <span>Base donation:</span>
-                                    <span className="font-medium">${baseAmount.toFixed(2)}</span>
-                                  </div>
-                                  {field.value && (
-                                    <>
-                                      <div className="flex justify-between text-muted-foreground">
-                                        <span>Transaction fees:</span>
-                                        <span>+${feesAmount.toFixed(2)}</span>
-                                      </div>
-                                      <div className="flex justify-between font-medium pt-2 border-t">
-                                        <span>Total amount:</span>
-                                        <span className="text-primary">${withFees.toFixed(2)}</span>
-                                      </div>
-                                    </>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                            <FormMessage className="text-xs" />
-                          </FormItem>
-                        )
-                      }}
-                    />
+                        {formMethods.watch("amount") && settings?.iftarEnabled && (
+                          <div className="text-sm text-muted-foreground">
+                            Total with fees: ${calculateTotal(formMethods.watch("amount"))?.toFixed(2)}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-sm text-muted-foreground">
+                        Iftar sponsorship is free for this date.
+                      </div>
+                    )}
                   </div>
 
                   <DialogFooter className="pt-2">
@@ -607,7 +648,7 @@
                           Processing...
                         </span>
                       ) : (
-                        "Proceed to Payment"
+                        settings?.iftarEnabled ? "Proceed to Payment" : "Sponsor Iftar"
                       )}
                     </Button>
                   </DialogFooter>
@@ -649,7 +690,9 @@
                     )}
                     <div className="flex justify-between font-medium pt-2 border-t">
                       <span>Total payment:</span>
-                      <span className="text-primary">${calculateTotal(formMethods.getValues().amount).toFixed(2)}</span>
+                      <span className="text-primary">
+                        ${calculateTotal(formMethods.getValues().amount)?.toFixed(2)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -683,7 +726,7 @@
                     <div className="flex justify-between">
                       <span className="font-medium">Date:</span>
                       <span>
-                        {confirmationDetails.date.toLocaleDateString("en-US", {
+                        {confirmationDetails.date?.toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
@@ -696,7 +739,7 @@
                     </div>
                     <div className="flex justify-between">
                       <span className="font-medium">Amount:</span>
-                      <span>${Number.parseFloat(confirmationDetails.amount).toFixed(2)}</span>
+                      <span>${Number.parseFloat(confirmationDetails.amount.toString()).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>

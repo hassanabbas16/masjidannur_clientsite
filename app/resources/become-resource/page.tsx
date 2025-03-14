@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/use-toast"
 import { Loader2, CheckCircle, Phone, Mail, User, FileText, MessageSquare, ArrowLeft } from "lucide-react"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 const formSchema = z.object({
   name: z
@@ -44,11 +45,13 @@ const formSchema = z.object({
     .max(500, {
       message: "Description must not exceed 500 characters.",
     }),
+  image: z.string().optional(),
 })
 
 export default function BecomeResourcePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [image, setImage] = useState("")
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,6 +61,7 @@ export default function BecomeResourcePage() {
       phone: "",
       heading: "",
       description: "",
+      image: "",
     },
   })
 
@@ -80,6 +84,7 @@ export default function BecomeResourcePage() {
             email: values.email,
             phone: values.phone,
             isApproved: false,
+            image: values.image,
           }),
         })
 
@@ -105,6 +110,7 @@ export default function BecomeResourcePage() {
         phone: values.phone,
         heading: values.heading,
         description: values.description,
+        image: values.image,
       }
 
       try {
@@ -297,6 +303,26 @@ export default function BecomeResourcePage() {
                               {...field}
                             />
                           </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Profile Image (Optional)</FormLabel>
+                        <FormControl>
+                          <ImageUpload
+                            value={field.value || ""}
+                            onChange={(url) => {
+                              setImage(url)
+                              field.onChange(url)
+                            }}
+                            disabled={isSubmitting}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

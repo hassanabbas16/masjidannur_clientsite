@@ -1,0 +1,272 @@
+[{
+  "_id": {
+    "$oid": "67cce4d91af2ecadf9e39749"
+  },
+  "logo": "https://i.ibb.co/rRKN8pBp/Whats-App-Image-2025-03-05-at-20-32-19-c7d613dc.jpg",
+  "siteName": "Masjid AnNoor",
+  "siteLocation": "Fort Smith, AR",
+  "headerMenuItems": [
+    {
+      "id": "home",
+      "name": "Home",
+      "href": "/",
+      "enabled": true,
+      "dropdown": false,
+      "order": 0,
+      "items": [],
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e3974a"
+      }
+    },
+    {
+      "id": "about",
+      "name": "About",
+      "href": "/about",
+      "enabled": true,
+      "dropdown": false,
+      "order": 1,
+      "items": [],
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e3974b"
+      }
+    },
+    {
+      "id": "programs",
+      "name": "Programs",
+      "href": "/programs",
+      "enabled": true,
+      "dropdown": true,
+      "order": 2,
+      "items": [
+        {
+          "id": "team-fajr",
+          "name": "Team Fajr",
+          "href": "/programs/67ccea4405ce642c9e22ece2",
+          "order": 0,
+          "_id": {
+            "$oid": "67cce4d91af2ecadf9e3974d"
+          }
+        },
+        {
+          "id": "tafsir-classes",
+          "name": "Tafsir Classes",
+          "href": "/programs/67ccea4405ce642c9e22ece3",
+          "order": 1,
+          "_id": {
+            "$oid": "67cce4d91af2ecadf9e3974e"
+          }
+        },
+        {
+          "id": "islamic-school",
+          "name": "Islamic School",
+          "href": "/programs/67ccea4405ce642c9e22ece4",
+          "order": 2,
+          "_id": {
+            "$oid": "67cce4d91af2ecadf9e3974f"
+          }
+        },
+        {
+          "id": "revert-tutoring",
+          "name": "Revert Tutoring",
+          "href": "/programs/67ccea4405ce642c9e22ece5",
+          "order": 3,
+          "_id": {
+            "$oid": "67cce4d91af2ecadf9e39750"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e3974c"
+      }
+    },
+    {
+      "id": "resources",
+      "name": "Resources",
+      "href": "/resources",
+      "enabled": true,
+      "dropdown": true,
+      "order": 3,
+      "items": [
+        {
+          "id": "become-resource",
+          "name": "Become A Resource",
+          "href": "/resources/become-resource",
+          "order": 0,
+          "_id": {
+            "$oid": "67cce4d91af2ecadf9e39752"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e39751"
+      }
+    },
+    {
+      "id": "prayer-times",
+      "name": "Prayer Times",
+      "href": "/prayer-times",
+      "enabled": true,
+      "dropdown": false,
+      "order": 4,
+      "items": [],
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e39753"
+      }
+    },
+    {
+      "id": "online-giving",
+      "name": "Online Giving",
+      "href": "/online-giving",
+      "enabled": true,
+      "dropdown": false,
+      "order": 5,
+      "items": [],
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e39754"
+      }
+    },
+    {
+      "id": "ramadan",
+      "name": "Ramadan",
+      "href": "/ramadan",
+      "enabled": true,
+      "dropdown": true,
+      "order": 6,
+      "items": [
+        {
+          "id": "iftar-times",
+          "name": "Iftar Times",
+          "href": "/ramadan/iftar-times",
+          "order": 0,
+          "_id": {
+            "$oid": "67cce4d91af2ecadf9e39756"
+          }
+        },
+        {
+          "id": "sponsor-iftar",
+          "name": "Sponsor an Iftar",
+          "href": "/ramadan/sponsor-iftar",
+          "order": 1,
+          "_id": {
+            "$oid": "67cce4d91af2ecadf9e39757"
+          }
+        }
+      ],
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e39755"
+      }
+    }
+  ],
+  "footerLogo": "https://i.ibb.co/rRKN8pBp/Whats-App-Image-2025-03-05-at-20-32-19-c7d613dc.jpg",
+  "footerTagline": "Serving the spiritual, educational, and social needs of the Muslim community since 1993. A beacon of faith and service in our community.",
+  "socialLinks": [
+    {
+      "platform": "Facebook",
+      "url": "#",
+      "icon": "Facebook",
+      "enabled": true,
+      "_id": {
+        "$oid": "67ce17b144fbb4a733370aba"
+      }
+    },
+    {
+      "platform": "Instagram",
+      "url": "#",
+      "icon": "Instagram",
+      "enabled": true,
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e39759"
+      }
+    },
+    {
+      "platform": "Twitter",
+      "url": "#",
+      "icon": "Twitter",
+      "enabled": true,
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e3975a"
+      }
+    }
+  ],
+  "quickLinks": [
+    {
+      "id": "home",
+      "name": "Home",
+      "href": "/",
+      "enabled": true,
+      "order": 0,
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e3975b"
+      }
+    },
+    {
+      "id": "about",
+      "name": "About",
+      "href": "/about",
+      "enabled": true,
+      "order": 1,
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e3975c"
+      }
+    },
+    {
+      "id": "programs",
+      "name": "Programs",
+      "href": "/programs",
+      "enabled": true,
+      "order": 2,
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e3975d"
+      }
+    },
+    {
+      "id": "events",
+      "name": "Events",
+      "href": "/event",
+      "enabled": true,
+      "order": 3,
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e3975e"
+      }
+    },
+    {
+      "id": "prayer-times",
+      "name": "Prayer Times",
+      "href": "/prayer-times",
+      "enabled": true,
+      "order": 4,
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e3975f"
+      }
+    },
+    {
+      "id": "donate",
+      "name": "Donate",
+      "href": "/online-giving",
+      "enabled": true,
+      "order": 5,
+      "_id": {
+        "$oid": "67cce4d91af2ecadf9e39760"
+      }
+    }
+  ],
+  "contactInfo": {
+    "address": "1800 S. Albert Pike Ave, Fort Smith, AR 72903",
+    "phone": "479-783-2914",
+    "email": "Sunnie.islamic.center@gmail.com"
+  },
+  "copyrightText": "© {year} Masjid AnNoor. All rights reserved.",
+  "developerInfo": {
+    "name": "Emergitech Solutions",
+    "url": "https://emergitechsolutions.com",
+    "enabled": true
+  },
+  "isActive": true,
+  "createdAt": {
+    "$date": "2025-03-09T00:46:17.218Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:54:09.571Z"
+  },
+  "__v": 0
+}]

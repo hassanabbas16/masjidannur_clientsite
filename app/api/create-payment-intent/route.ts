@@ -9,12 +9,44 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-02-24.acacia",
 })
 
+// Simple in-memory store for rate limiting
+const rateLimit = new Map()
+
+// Rate limit function
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const windowMs = 5 * 60 * 1000 // 5 minutes
+  const maxRequests = 3 // 3 requests per window
+
+  const userRequests = rateLimit.get(ip) || []
+  const recentRequests = userRequests.filter((timestamp: number) => now - timestamp < windowMs)
+
+  if (recentRequests.length >= maxRequests) {
+    return false
+  }
+
+  recentRequests.push(now)
+  rateLimit.set(ip, recentRequests)
+  return true
+}
+
 export async function POST(req: Request) {
   try {
+    // Get IP address from request
+    const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
+    
+    // Check rate limit
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json(
+        { error: "Too many payment attempts. Please try again in 5 minutes." },
+        { status: 429 }
+      )
+    }
+
     await dbConnect()
 
     const body = await req.json()
-    const { donationType: donationTypeName, amount, name, email, phone, anonymous, coverFees } = body
+    const { donationType: donationTypeName, amount, name, email, phone, anonymous, coverFees, dateId } = body
 
     if (!amount || !email || !donationTypeName) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -52,7 +84,9 @@ export async function POST(req: Request) {
           name: anonymous ? "Anonymous" : name || "",
           phone: phone || "",
           anonymous: anonymous.toString(),
-          email:email,
+          email: email,
+          dateId: dateId,
+          sponsorName: name,
         },
         automatic_payment_methods: { enabled: true },
       },
@@ -81,6 +115,12 @@ export async function POST(req: Request) {
       amount: donationAmount.toFixed(2),
     })
   } catch (error: any) {
+    if (error.message.includes('Too many')) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 429 } // Too Many Requests
+      )
+    }
     console.error("Error creating PaymentIntent:", error)
     return NextResponse.json({ error: error.message || "Error creating PaymentIntent" }, { status: 500 })
   }

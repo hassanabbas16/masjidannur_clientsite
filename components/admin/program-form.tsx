@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 interface ProgramFormProps {
   initialData?: {
@@ -29,7 +30,7 @@ export default function ProgramForm({ initialData, isEditing = false }: ProgramF
   const [formData, setFormData] = useState({
     title: initialData?.title || "",
     description: initialData?.description || "",
-    image: initialData?.image || "/placeholder.svg?height=400&width=600",
+    image: initialData?.image || "",
     fullDescription: initialData?.fullDescription || "",
     schedule: initialData?.schedule || "",
     contact: initialData?.contact || "",
@@ -71,7 +72,7 @@ export default function ProgramForm({ initialData, isEditing = false }: ProgramF
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-4">
       <Card>
         <CardHeader>
           <CardTitle>{isEditing ? "Edit Program" : "Create New Program"}</CardTitle>
@@ -95,8 +96,12 @@ export default function ProgramForm({ initialData, isEditing = false }: ProgramF
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="image">Image URL</Label>
-            <Input id="image" name="image" value={formData.image} onChange={handleChange} />
+            <Label>Image</Label>
+            <ImageUpload
+              value={formData.image}
+              onChange={(url) => setFormData((prev) => ({ ...prev, image: url }))}
+              onRemove={() => setFormData((prev) => ({ ...prev, image: "" }))}
+            />
           </div>
 
           <div className="space-y-2">

@@ -5,20 +5,23 @@ import Event from "@/models/event"
 export async function GET(req: NextRequest) {
   try {
     await dbConnect()
+    console.log("Connected to database:", process.env.MONGODB_URI)
 
     const url = new URL(req.url)
-    const category = url.searchParams.get("category")
     const showHidden = url.searchParams.get("showHidden") === "true"
-
-    const query: any = {}
-    if (category) query.category = category
-    if (!showHidden) query.isVisible = true
-
-    const events = await Event.find(query).sort({ date: 1 })
-
-    return NextResponse.json(events, { status: 200 })
+    
+    // Modify query based on showHidden parameter
+    const query = showHidden ? {} : { isVisible: true }
+    
+    console.log("Query:", query); // Debug log
+    
+    const events = await Event.find(query).sort({ date: -1 })
+    
+    console.log("Found events:", events.length); // Debug log
+    
+    return NextResponse.json(events)
   } catch (error) {
-    console.error("Error fetching events:", error)
+    console.error("Error connecting to database or fetching events:", error)
     return NextResponse.json({ error: "Failed to fetch events" }, { status: 500 })
   }
 }

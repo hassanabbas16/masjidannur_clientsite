@@ -12,6 +12,8 @@ import ZakatCalculator from "@/components/zakat-calculator-widget"
 import GregorianHijriCalendar from "@/components/GregorianHijriCalendar"
 import SpecialIslamicDays from "@/components/special-islamic-days"
 import '../styles/home.css'
+import { EventsSection } from "@/components/events-section"
+import { Event } from "@/types"
 
 interface HomePageSettings {
   heroTitle: string
@@ -42,14 +44,6 @@ interface HomePageSettings {
     link: string
     isVisible: boolean
   }[]
-}
-
-interface Event {
-  _id: string
-  title: string
-  description: string
-  date: string
-  image: string
 }
 
 export default function Home() {
@@ -172,60 +166,9 @@ export default function Home() {
 
       {/* Events Carousel */}
       {settings.showEventsSection && events.length > 0 && (
-        <section className="container px-4 md:px-6 py-16 md:py-24">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-heading font-bold gradient-heading mb-2">
-                {settings.eventsTitle}
-              </h2>
-              <p className="text-muted-foreground">{settings.eventsSubtitle}</p>
-            </div>
-            <Button asChild variant="outline" className="border-primary/20 text-primary hover:bg-primary/5">
-              <Link href="/event">View All Events</Link>
-            </Button>
-          </div>
-
-          <Tabs defaultValue={`event-${events[0]?._id}`} className="w-full">
-            <TabsList className="grid grid-cols-3 mb-8 bg-muted/50 p-1 rounded-full max-w-md mx-auto">
-              {events.map((event) => (
-                <TabsTrigger
-                  key={event._id}
-                  value={`event-${event._id}`}
-                  className="rounded-full data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm"
-                >
-                  {event.title}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            {events.map((event) => (
-              <TabsContent key={event._id} value={`event-${event._id}`} className="mt-0 animate-fade-in">
-                <Card className="overflow-hidden border-0 shadow-elegant">
-                  <CardContent className="p-0">
-                    <div className="relative">
-                      <Image
-                        src={event.image || "/placeholder.svg?height=400&width=800"}
-                        alt={event.title}
-                        width={1200}
-                        height={600}
-                        className="w-full h-[400px] object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                      <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                        <span className="inline-block px-3 py-1 bg-primary text-white text-xs font-medium rounded-full mb-3">
-                          Upcoming
-                        </span>
-                        <h3 className="text-2xl md:text-3xl font-heading font-bold text-white mb-2">{event.title}</h3>
-                        <p className="text-white/90 mb-4 max-w-2xl">{event.description}</p>
-                        <Link href={`/event/${event._id}`} passHref>
-                          <Button className="bg-white text-primary hover:bg-white/90">Learn More</Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            ))}
-          </Tabs>
+        <section className="container py-8">
+          <h2 className="text-3xl font-bold mb-6">Upcoming Events</h2>
+          <EventsSection events={events} />
         </section>
       )}
 

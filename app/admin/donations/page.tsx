@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Calendar, Download, Filter, Search } from "lucide-react"
+import { Calendar, Download, Filter, Search, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,6 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import type { DateRange } from "react-day-picker"
 import { format } from "date-fns"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
+import Link from "next/link"
 
 interface Donation {
   _id: string
@@ -39,8 +40,8 @@ export default function DonationsPage() {
   const [donationTypes, setDonationTypes] = useState<DonationType[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedType, setSelectedType] = useState<string>("")
-  const [selectedStatus, setSelectedStatus] = useState<string>("")
+  const [selectedType, setSelectedType] = useState("all")
+  const [selectedStatus, setSelectedStatus] = useState("all")
   const [date, setDate] = useState<DateRange | undefined>()
   const router = useRouter()
 
@@ -88,8 +89,8 @@ export default function DonationsPage() {
   }
 
   const handleClearFilters = () => {
-    setSelectedType("")
-    setSelectedStatus("")
+    setSelectedType("all")
+    setSelectedStatus("all")
     setDate(undefined)
     fetchDonations()
   }
@@ -151,23 +152,54 @@ export default function DonationsPage() {
     }
   }
 
-  const filteredDonations = donations.filter(
-    (donation) =>
-      donation.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (donation.name && donation.name.toLowerCase().includes(searchTerm.toLowerCase())),
-  )
+  const getFilteredDonations = () => {
+    return donations.filter((donation) => {
+      const matchesSearch =
+        donation.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (donation.name && donation.name.toLowerCase().includes(searchTerm.toLowerCase()));
+
+      let matchesType = true;
+      if (selectedType !== "all") {
+        matchesType = donation.donationType._id === selectedType;
+      }
+
+      let matchesStatus = true;
+      if (selectedStatus !== "all") {
+        matchesStatus = donation.status === selectedStatus;
+      }
+
+      const matchesDate = !date?.from || (
+        new Date(donation.createdAt) >= date.from &&
+        (!date.to || new Date(donation.createdAt) <= date.to)
+      );
+
+      return matchesSearch && matchesType && matchesStatus && matchesDate;
+    });
+  };
+
+  const filteredDonations = getFilteredDonations();
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Donations</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={exportToCsv}>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="secondary"
+            className="text-foreground"
+            onClick={exportToCsv}
+          >
             <Download className="mr-2 h-4 w-4" />
             Export CSV
           </Button>
-          <Button asChild>
-            <a href="/admin/donations/types">Manage Types</a>
+          <Button 
+            variant="secondary"
+            className="text-foreground"
+            asChild
+          >
+            <Link href="/admin/donations/types">
+              Manage Donation Types
+            </Link>
           </Button>
         </div>
       </div>
@@ -189,8 +221,8 @@ export default function DonationsPage() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="w-[180px]">
+              <Select value={selectedType} onValueChange={setSelectedType} defaultValue="all">
+                <SelectTrigger className="w-[160px]">
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
@@ -203,8 +235,8 @@ export default function DonationsPage() {
                 </SelectContent>
               </Select>
 
-              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="w-[180px]">
+              <Select value={selectedStatus} onValueChange={setSelectedStatus} defaultValue="all">
+                <SelectTrigger className="w-[160px]">
                   <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
                 <SelectContent>

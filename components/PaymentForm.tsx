@@ -6,10 +6,11 @@ import { useState } from "react"
 import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
+import { type StripePaymentElementChangeEvent } from "@stripe/stripe-js"
 
 interface PaymentFormProps {
   setErrorMessage: (message: string | undefined) => void
-  onPaymentSuccess?: () => void
+  onPaymentSuccess: (paymentIntentId: string) => void
 }
 
 export default function PaymentForm({ setErrorMessage, onPaymentSuccess }: PaymentFormProps) {
@@ -18,65 +19,38 @@ export default function PaymentForm({ setErrorMessage, onPaymentSuccess }: Payme
   const [isProcessing, setIsProcessing] = useState(false)
   const [isPaymentElementReady, setIsPaymentElementReady] = useState(false)
   const [paymentMethodValid, setPaymentMethodValid] = useState(false)
-  const [localErrorMessage, setLocalErrorMessage] = useState<string | undefined>()
+  const [localErrorMessage, setLocalErrorMessage] = useState<string>()
 
-  async function handlePaymentSubmit(event: React.MouseEvent<HTMLButtonElement>) {
-    event.preventDefault()
-
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
     if (!stripe || !elements) {
-      const errorMsg = "Payment system not initialized. Please refresh the page."
-      setErrorMessage(errorMsg)
-      setLocalErrorMessage(errorMsg)
-      return
-    }
-
-    if (!paymentMethodValid) {
-      const errorMsg = "Please select a valid payment method before submitting."
-      setErrorMessage(errorMsg)
-      setLocalErrorMessage(errorMsg)
       return
     }
 
     setIsProcessing(true)
-    setErrorMessage(undefined)
     setLocalErrorMessage(undefined)
+    setErrorMessage(undefined)
 
     try {
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
+        redirect: "if_required",
         confirmParams: {
           return_url: `${window.location.origin}/donation-confirmation`,
         },
-        redirect: "if_required",
       })
 
       if (error) {
-        console.error("Payment confirmation error:", error)
-        const errorMsg = error.message || "An error occurred while processing your payment."
-        setErrorMessage(errorMsg)
-        setLocalErrorMessage(errorMsg)
-      } else if (paymentIntent) {
-        if (paymentIntent.status === "succeeded") {
-          if (onPaymentSuccess) {
-            onPaymentSuccess()
-          } else {
-            window.location.href = `${window.location.origin}/donation-confirmation?payment_intent=${paymentIntent.id}`
-          }
-        } else if (paymentIntent.status === "requires_action") {
-          const errorMsg = "Additional action required. Please follow the prompts."
-          setErrorMessage(errorMsg)
-          setLocalErrorMessage(errorMsg)
-        } else {
-          const errorMsg = `Unexpected payment status: ${paymentIntent.status}`
-          setErrorMessage(errorMsg)
-          setLocalErrorMessage(errorMsg)
-        }
+        setLocalErrorMessage(error.message)
+        setErrorMessage(error.message)
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        onPaymentSuccess(paymentIntent.id)
       }
-    } catch (err) {
-      console.error("Unexpected error in confirmPayment:", err)
-      const errorMsg = "An unexpected error occurred. Please try again."
-      setErrorMessage(errorMsg)
-      setLocalErrorMessage(errorMsg)
+    } catch (error) {
+      console.error("Payment error:", error)
+      setLocalErrorMessage("An error occurred while processing your payment.")
+      setErrorMessage("An error occurred while processing your payment.")
     } finally {
       setIsProcessing(false)
     }
@@ -90,8 +64,8 @@ export default function PaymentForm({ setErrorMessage, onPaymentSuccess }: Payme
           onReady={() => {
             setIsPaymentElementReady(true)
           }}
-          onChange={(e) => {
-            if (e.error) {
+          onChange={(e: StripePaymentElementChangeEvent) => {
+            if (!e.complete) {
               setPaymentMethodValid(false)
             } else {
               setPaymentMethodValid(e.complete)
@@ -108,7 +82,7 @@ export default function PaymentForm({ setErrorMessage, onPaymentSuccess }: Payme
         )}
       </div>
       <Button
-        onClick={handlePaymentSubmit}
+        onClick={handleSubmit}
         disabled={!stripe || !isPaymentElementReady || isProcessing || !paymentMethodValid}
         className="w-full"
         aria-busy={isProcessing}

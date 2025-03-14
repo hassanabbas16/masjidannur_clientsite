@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Plus, Trash2 } from "lucide-react"
+import { ImageUpload } from "@/components/ui/image-upload"
 
 interface AboutFormProps {
   initialData: {
@@ -47,10 +48,19 @@ interface AboutFormProps {
   }
 }
 
+type FormData = {
+  hero: { title: string; subtitle: string }
+  sidebar: { image: string; visitTitle: string; visitDescription: string; address: string }
+  journey: { title: string; content: string[] }
+  mission: { title: string; content: string }
+  services: { title: string; items: Array<{ title: string; description: string }> }
+  join: { title: string; content: string }
+}
+
 export default function AboutForm({ initialData }: AboutFormProps) {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     hero: { ...initialData.hero },
     sidebar: { ...initialData.sidebar },
     journey: {
@@ -65,23 +75,28 @@ export default function AboutForm({ initialData }: AboutFormProps) {
     join: { ...initialData.join },
   })
 
-  const handleChange = (section: string, field: string, value: string) => {
+  const handleChange = (section: keyof FormData, field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [section]: {
-        ...prev[section as keyof typeof prev],
+        ...prev[section],
         [field]: value,
       },
     }))
   }
 
-  const handleNestedChange = (section: string, nestedSection: string, field: string, value: string) => {
+  const handleNestedChange = (
+    section: keyof FormData,
+    nestedSection: string,
+    field: string,
+    value: string
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [section]: {
-        ...prev[section as keyof typeof prev],
+        ...prev[section],
         [nestedSection]: {
-          ...prev[section as keyof typeof prev][nestedSection as any],
+          ...(prev[section] as any)[nestedSection],
           [field]: value,
         },
       },
@@ -222,12 +237,11 @@ export default function AboutForm({ initialData }: AboutFormProps) {
 
         <TabsContent value="sidebar" className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="sidebar-image">Sidebar Image URL</Label>
-            <Input
-              id="sidebar-image"
+            <Label htmlFor="sidebar-image">Sidebar Image</Label>
+            <ImageUpload
               value={formData.sidebar.image}
-              onChange={(e) => handleChange("sidebar", "image", e.target.value)}
-              required
+              onChange={(url) => handleChange("sidebar", "image", url)}
+              disabled={isSubmitting}
             />
           </div>
           <div className="space-y-2">

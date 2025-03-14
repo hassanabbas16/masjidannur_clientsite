@@ -4,6 +4,7 @@ export interface IRamadanSettings extends Document {
   year: number
   startDate: Date
   endDate: Date
+  iftarEnabled: boolean
   iftarCost: number
   iftarDescription: string
   iftarCapacity: number
@@ -22,7 +23,15 @@ const RamadanSettingsSchema: Schema = new Schema(
     year: { type: Number, required: true, unique: true },
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
-    iftarCost: { type: Number, required: true, default: 500 },
+    iftarEnabled: {
+      type: Boolean,
+      default: true
+    },
+    iftarCost: { 
+      type: Number, 
+      required: false,
+      default: 500 
+    },
     iftarCapacity: { type: Number, required: true, default: 100 },
     iftarDescription: {
       type: String,

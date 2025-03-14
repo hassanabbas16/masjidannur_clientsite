@@ -55,6 +55,11 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Add custom colors for your theme
+        masjid: {
+          DEFAULT: "hsl(var(--masjid))",
+          foreground: "hsl(var(--masjid-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

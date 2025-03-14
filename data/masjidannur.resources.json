@@ -1,0 +1,58 @@
+[{
+  "_id": {
+    "$oid": "67cb9f70bc1e79c33a8c7dfd"
+  },
+  "name": "Aisha Rahman",
+  "title": "Arabic Language Instructor",
+  "description": "Certified Arabic language instructor with 10+ years of teaching experience. Offers classes for beginners to advanced learners, focusing on Modern Standard Arabic and conversational skills.",
+  "email": "aisha.rahman@example.com",
+  "phone": "(479) 234-5678",
+  "image": "/placeholder.svg?height=200&width=200",
+  "isApproved": true,
+  "updatedAt": {
+    "$date": "2025-03-08T01:44:26.840Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cb9f70bc1e79c33a8c7dfe"
+  },
+  "name": "Yusuf Ali",
+  "title": "Islamic Studies Teacher",
+  "description": "Specializing in Islamic history and fiqh for middle and high school students. Provides engaging lessons on the life of Prophet Muhammad (PBUH), Islamic civilization, and contemporary Islamic issues.",
+  "email": "yusuf.ali@example.com",
+  "phone": "(479) 345-6789",
+  "image": "/placeholder.svg?height=200&width=200",
+  "isApproved": true
+},
+{
+  "_id": {
+    "$oid": "67cb9f70bc1e79c33a8c7dff"
+  },
+  "name": "Fatima Hassan",
+  "title": "Women's Halaqa Leader",
+  "description": "Leads weekly women's halaqa sessions focusing on Quranic tafsir and personal development. Provides a supportive environment for sisters to learn and grow in their faith.",
+  "email": "fatima.hassan@example.com",
+  "phone": "(479) 456-7890",
+  "image": "/placeholder.svg?height=200&width=200",
+  "isApproved": true
+},
+{
+  "_id": {
+    "$oid": "67ce189844fbb4a733370b2a"
+  },
+  "name": "Sarim Khan",
+  "title": "Tech Consulting Company",
+  "description": "We specialize in creating web development, application development and many other things.",
+  "email": "sarimk0403@gmail.com",
+  "phone": "4794019628",
+  "image": "/placeholder.svg?height=200&width=200",
+  "isApproved": true,
+  "createdAt": {
+    "$date": "2025-03-09T22:39:20.473Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T22:39:55.510Z"
+  },
+  "__v": 0
+}]

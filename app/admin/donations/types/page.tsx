@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Edit, Plus, Trash2, DollarSign, Heart } from "lucide-react"
+import { Edit, Plus, Trash2, DollarSign, Heart, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -111,8 +111,21 @@ export default function DonationTypesPage() {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Manage Donation Types</h1>
+        <Button 
+          variant="secondary"
+          className="text-foreground"
+          asChild
+        >
+          <Link href="/admin/donations" className="flex items-center">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Donations
+          </Link>
+        </Button>
+      </div>
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-bold">Donation Types</h1>
         <Button asChild>
           <Link href="/admin/donations/types/new">
             <Plus className="mr-2 h-4 w-4" />

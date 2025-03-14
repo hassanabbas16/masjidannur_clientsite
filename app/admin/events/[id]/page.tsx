@@ -4,9 +4,26 @@ import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import EventForm from "@/components/admin/event-form"
 
+// Add Event type
+interface Event {
+  _id: string
+  title: string
+  description: string
+  date: string
+  endDate: string
+  location: string
+  category: string[]
+  organizer: string
+  contactEmail: string
+  image: string
+  isVisible: boolean
+  additionalDetails: string
+}
+
 export default function EditEventPage() {
   const params = useParams()
-  const [event, setEvent] = useState(null)
+  // Add proper typing to useState
+  const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

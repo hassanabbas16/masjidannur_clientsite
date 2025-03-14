@@ -12,13 +12,42 @@ interface RamadanResource {
   _id: string
   title: string
   description: string
-  resourceType: string
+  resourceType: "pdf" | "link" | "video" | "image"
   url: string
   fileSize?: string
   category: string
   isVisible: boolean
   order: number
   year: number
+}
+
+// Helper function to handle downloads
+const handleDownload = async (url: string, filename: string) => {
+  try {
+    // Create the download URL
+    const downloadUrl = `/api/download?url=${encodeURIComponent(url)}`
+    
+    // Create a temporary link element
+    const link = document.createElement('a')
+    link.href = downloadUrl
+    link.download = filename || 'download.pdf'
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  } catch (error) {
+    console.error('Download failed:', error)
+    // Fallback to opening in new tab
+    window.open(url, '_blank')
+  }
+}
+
+// Function to get filename from URL
+const getFilenameFromUrl = (url: string) => {
+  try {
+    return url.split('/').pop() || 'download.pdf'
+  } catch (error) {
+    return 'download.pdf'
+  }
 }
 
 export default function RamadanResourcesPage() {
@@ -106,6 +135,59 @@ export default function RamadanResourcesPage() {
     }
   }
 
+  const renderResourceLink = (resource: RamadanResource) => {
+    // Check if the URL points to a PDF
+    const isPDF = resource.url.toLowerCase().endsWith('.pdf');
+
+    // Handle both PDF and link types that point to PDFs
+    if (isPDF || (resource.resourceType === "pdf")) {
+      return (
+        <Button
+          variant="default"
+          size="sm"
+          className="mt-4 w-full bg-primary hover:bg-primary/90"
+          onClick={() => handleDownload(resource.url, getFilenameFromUrl(resource.url))}
+        >
+          <Download className="w-4 h-4 mr-2" />
+          Download PDF
+          {resource.fileSize && <span className="ml-2 text-xs">({resource.fileSize})</span>}
+        </Button>
+      )
+    }
+
+    // Handle non-PDF links
+    if (resource.resourceType === "link") {
+      return (
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-4 w-full" // Added w-full for consistency
+          onClick={() => window.open(resource.url, '_blank')}
+        >
+          <ExternalLink className="w-4 h-4 mr-2" />
+          Visit Link
+        </Button>
+      )
+    }
+
+    // Handle video resources
+    if (resource.resourceType === "video") {
+      return (
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-4 w-full" // Added w-full for consistency
+          onClick={() => window.open(resource.url, '_blank')}
+        >
+          <Video className="w-4 h-4 mr-2" />
+          Watch Video
+        </Button>
+      )
+    }
+
+    return null
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -180,6 +262,16 @@ export default function RamadanResourcesPage() {
                       </span>
                     </div>
                     {getResourceTypeLabel(resource.resourceType)}
+                    {resource.url && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="hover:bg-primary/10"
+                        onClick={() => handleDownload(resource.url, getFilenameFromUrl(resource.url))}
+                      >
+                        <Download className="h-5 w-5" />
+                      </Button>
+                    )}
                   </div>
                   <CardTitle className="text-xl">{resource.title}</CardTitle>
                   <CardDescription className="line-clamp-2">{resource.description}</CardDescription>
@@ -189,29 +281,14 @@ export default function RamadanResourcesPage() {
                     <p className="text-sm text-muted-foreground mb-4">{resource.description}</p>
                   </div>
                   <div className="mt-auto">
-                    {resource.resourceType === "pdf" ? (
-                      <Button asChild className="w-full">
-                        <a href={resource.url} target="_blank" rel="noopener noreferrer">
-                          <Download className="mr-2 h-4 w-4" />
-                          Download PDF
-                          {resource.fileSize && <span className="ml-1 text-xs">({resource.fileSize})</span>}
-                        </a>
-                      </Button>
-                    ) : resource.resourceType === "video" ? (
-                      <Button asChild className="w-full">
-                        <a href={resource.url} target="_blank" rel="noopener noreferrer">
-                          <Video className="mr-2 h-4 w-4" />
-                          Watch Video
-                        </a>
-                      </Button>
-                    ) : (
-                      <Button asChild className="w-full">
-                        <a href={resource.url} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="mr-2 h-4 w-4" />
-                          View Resource
-                        </a>
-                      </Button>
-                    )}
+                    <Button
+                      variant="default"
+                      className="w-full bg-primary hover:bg-primary/90"
+                      onClick={() => handleDownload(resource.url, getFilenameFromUrl(resource.url))}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download Resource
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

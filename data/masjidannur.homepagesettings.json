@@ -1,0 +1,83 @@
+[{
+  "_id": {
+    "$oid": "67ccdf4f1af2ecadf9e39491"
+  },
+  "heroTitle": "Welcome to Masjid AnNoor",
+  "heroSubtitle": "A place of worship, learning, and community for Muslims in Fort Smith, Arkansas",
+  "heroButtonPrimary": {
+    "text": "View Prayer Times",
+    "link": "/prayer-times",
+    "isVisible": true
+  },
+  "heroButtonSecondary": {
+    "text": "Learn More",
+    "link": "/about",
+    "isVisible": true
+  },
+  "showPrayerTimesWidget": true,
+  "showZakatCalculator": true,
+  "showHijriCalendar": true,
+  "showSpecialIslamicDays": true,
+  "showEventsSection": true,
+  "featuredEventIds": [
+    "67ccc6852579f07d3b61d6fa",
+    "67ce124744fbb4a73337023a",
+    "67ccc6852579f07d3b61d6fc"
+  ],
+  "eventsTitle": "Upcoming Events",
+  "eventsSubtitle": "Join us for these special occasions at Masjid AnNoor",
+  "mainButtons": [
+    {
+      "id": "prayer-times",
+      "title": "Prayer Schedule",
+      "description": "View daily prayer times",
+      "icon": "Clock",
+      "link": "/prayer-times",
+      "isVisible": true,
+      "_id": {
+        "$oid": "67ccdf4f1af2ecadf9e39492"
+      }
+    },
+    {
+      "id": "donations",
+      "title": "Make A Donation",
+      "description": "Support our masjid",
+      "icon": "DollarSign",
+      "link": "/online-giving",
+      "isVisible": true,
+      "_id": {
+        "$oid": "67ccdf4f1af2ecadf9e39493"
+      }
+    },
+    {
+      "id": "sponsor-iftar",
+      "title": "Sponsor An Iftar",
+      "description": "Provide meals during Ramadan",
+      "icon": "Heart",
+      "link": "/ramadan/sponsor-iftar",
+      "isVisible": true,
+      "_id": {
+        "$oid": "67ccdf4f1af2ecadf9e39494"
+      }
+    },
+    {
+      "id": "iftar-times",
+      "title": "Iftaar Schedule",
+      "description": "View Ramadan timings",
+      "icon": "Calendar",
+      "link": "/ramadan/iftar-times",
+      "isVisible": true,
+      "_id": {
+        "$oid": "67ccdf4f1af2ecadf9e39495"
+      }
+    }
+  ],
+  "isActive": true,
+  "createdAt": {
+    "$date": "2025-03-09T00:22:39.800Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-10T00:00:26.556Z"
+  },
+  "__v": 0
+}]

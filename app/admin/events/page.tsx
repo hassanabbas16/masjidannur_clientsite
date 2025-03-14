@@ -45,21 +45,22 @@ export default function AdminEventsPage() {
   const router = useRouter()
 
   useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setLoading(true)
+        const response = await fetch("/api/events?showHidden=true")
+        const data = await response.json()
+        console.log("Loaded events:", data);
+        setEvents(data)
+      } catch (error) {
+        console.error("Error fetching events:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
     fetchEvents()
   }, [])
-
-  const fetchEvents = async () => {
-    try {
-      setLoading(true)
-      const response = await fetch("/api/events?showHidden=true")
-      const data = await response.json()
-      setEvents(data)
-    } catch (error) {
-      console.error("Error fetching events:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleDeleteClick = (id: string) => {
     setEventToDelete(id)

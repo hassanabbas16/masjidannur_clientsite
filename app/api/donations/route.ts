@@ -14,8 +14,12 @@ export async function GET(req: Request) {
 
     const query: any = {}
 
-    if (donationType) query.donationType = donationType
-    if (status) query.status = status
+    if (donationType && donationType !== "all") {
+      query.donationType = donationType
+    }
+    if (status && status !== "all") {
+      query.status = status
+    }
 
     if (startDate || endDate) {
       query.createdAt = {}
@@ -23,7 +27,9 @@ export async function GET(req: Request) {
       if (endDate) query.createdAt.$lte = new Date(endDate)
     }
 
-    const donations = await Donation.find(query).populate("donationType", "name").sort({ createdAt: -1 })
+    const donations = await Donation.find(query)
+      .populate("donationType", "name")
+      .sort({ createdAt: -1 })
 
     return NextResponse.json(donations)
   } catch (error) {

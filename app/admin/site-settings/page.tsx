@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import { Save, Plus, Trash2, Edit, Check, X, GripVertical, Facebook, Instagram, Twitter, Youtube, Linkedin, Mail, Phone, MapPin, ImageIcon, LinkIcon, MenuIcon, ExternalLink } from 'lucide-react'
 import { v4 as uuidv4 } from 'uuid'
+import { ImageUpload } from "@/components/ui/image-upload"
 
 interface SiteSettings {
   _id?: string
@@ -553,6 +554,15 @@ export default function SiteSettingsPage() {
     }
   }
 
+  const handleSettingsChange = (field: string, value: string) => {
+    if (!settings) return
+    
+    setSettings({
+      ...settings,
+      [field]: value
+    })
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[50vh]">
@@ -608,21 +618,13 @@ export default function SiteSettingsPage() {
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="logo">Logo URL</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="logo"
-                      value={settings.logo}
-                      onChange={(e) => setSettings({ ...settings, logo: e.target.value })}
-                      placeholder="/path/to/logo.png"
-                    />
-                    <Button variant="outline" size="icon" onClick={() => window.open(settings.logo, '_blank')}>
-                      <ImageIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Enter the URL path to your logo image
-                  </p>
+                  <Label>Logo</Label>
+                  <ImageUpload
+                    value={settings.logo}
+                    onChange={(url) => handleSettingsChange("logo", url)}
+                    onRemove={() => handleSettingsChange("logo", "")}
+                    disabled={saving}
+                  />
                 </div>
                 
                 <div className="space-y-2">
@@ -886,18 +888,13 @@ export default function SiteSettingsPage() {
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="footer-logo">Footer Logo URL</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="footer-logo"
-                      value={settings.footerLogo}
-                      onChange={(e) => setSettings({ ...settings, footerLogo: e.target.value })}
-                      placeholder="/path/to/logo.png"
-                    />
-                    <Button variant="outline" size="icon" onClick={() => window.open(settings.footerLogo, '_blank')}>
-                      <ImageIcon className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <Label>Footer Logo</Label>
+                  <ImageUpload
+                    value={settings.footerLogo}
+                    onChange={(url) => handleSettingsChange("footerLogo", url)}
+                    onRemove={() => handleSettingsChange("footerLogo", "")}
+                    disabled={saving}
+                  />
                 </div>
                 
                 <div className="space-y-2">

@@ -1,0 +1,1200 @@
+[{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48cd"
+  },
+  "date": {
+    "$date": "2025-12-31T19:00:00.000Z"
+  },
+  "available": false,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:23.795Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48ce"
+  },
+  "date": {
+    "$date": "2026-01-01T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48cf"
+  },
+  "date": {
+    "$date": "2026-01-02T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48d0"
+  },
+  "date": {
+    "$date": "2026-01-03T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48d1"
+  },
+  "date": {
+    "$date": "2026-01-04T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48d2"
+  },
+  "date": {
+    "$date": "2026-01-05T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48d3"
+  },
+  "date": {
+    "$date": "2026-01-06T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48d4"
+  },
+  "date": {
+    "$date": "2026-01-07T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48d5"
+  },
+  "date": {
+    "$date": "2026-01-08T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48d6"
+  },
+  "date": {
+    "$date": "2026-01-09T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48d7"
+  },
+  "date": {
+    "$date": "2026-01-10T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48d8"
+  },
+  "date": {
+    "$date": "2026-01-11T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48d9"
+  },
+  "date": {
+    "$date": "2026-01-12T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48da"
+  },
+  "date": {
+    "$date": "2026-01-13T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48db"
+  },
+  "date": {
+    "$date": "2026-01-14T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48dc"
+  },
+  "date": {
+    "$date": "2026-01-15T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48dd"
+  },
+  "date": {
+    "$date": "2026-01-16T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48de"
+  },
+  "date": {
+    "$date": "2026-01-17T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48df"
+  },
+  "date": {
+    "$date": "2026-01-18T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48e0"
+  },
+  "date": {
+    "$date": "2026-01-19T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48e1"
+  },
+  "date": {
+    "$date": "2026-01-20T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48e2"
+  },
+  "date": {
+    "$date": "2026-01-21T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48e3"
+  },
+  "date": {
+    "$date": "2026-01-22T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48e4"
+  },
+  "date": {
+    "$date": "2026-01-23T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48e5"
+  },
+  "date": {
+    "$date": "2026-01-24T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48e6"
+  },
+  "date": {
+    "$date": "2026-01-25T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48e7"
+  },
+  "date": {
+    "$date": "2026-01-26T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48e8"
+  },
+  "date": {
+    "$date": "2026-01-27T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48e9"
+  },
+  "date": {
+    "$date": "2026-01-28T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67cc521d5dc257f0773c48ea"
+  },
+  "date": {
+    "$date": "2026-01-29T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2026,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T14:20:13.124Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370f9f"
+  },
+  "date": {
+    "$date": "2025-02-28T19:00:00.000Z"
+  },
+  "available": false,
+  "sponsorId": null,
+  "sponsorName": "Sarim Khan",
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.514Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:44:15.065Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fa0"
+  },
+  "date": {
+    "$date": "2025-03-01T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fa1"
+  },
+  "date": {
+    "$date": "2025-03-02T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fa2"
+  },
+  "date": {
+    "$date": "2025-03-03T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fa3"
+  },
+  "date": {
+    "$date": "2025-03-04T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fa4"
+  },
+  "date": {
+    "$date": "2025-03-05T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fa5"
+  },
+  "date": {
+    "$date": "2025-03-06T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fa6"
+  },
+  "date": {
+    "$date": "2025-03-07T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fa7"
+  },
+  "date": {
+    "$date": "2025-03-08T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fa8"
+  },
+  "date": {
+    "$date": "2025-03-09T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fa9"
+  },
+  "date": {
+    "$date": "2025-03-10T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370faa"
+  },
+  "date": {
+    "$date": "2025-03-11T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fab"
+  },
+  "date": {
+    "$date": "2025-03-12T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fac"
+  },
+  "date": {
+    "$date": "2025-03-13T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fad"
+  },
+  "date": {
+    "$date": "2025-03-14T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fae"
+  },
+  "date": {
+    "$date": "2025-03-15T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370faf"
+  },
+  "date": {
+    "$date": "2025-03-16T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fb0"
+  },
+  "date": {
+    "$date": "2025-03-17T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fb1"
+  },
+  "date": {
+    "$date": "2025-03-18T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fb2"
+  },
+  "date": {
+    "$date": "2025-03-19T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fb3"
+  },
+  "date": {
+    "$date": "2025-03-20T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fb4"
+  },
+  "date": {
+    "$date": "2025-03-21T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fb5"
+  },
+  "date": {
+    "$date": "2025-03-22T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fb6"
+  },
+  "date": {
+    "$date": "2025-03-23T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fb7"
+  },
+  "date": {
+    "$date": "2025-03-24T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fb8"
+  },
+  "date": {
+    "$date": "2025-03-25T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fb9"
+  },
+  "date": {
+    "$date": "2025-03-26T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fba"
+  },
+  "date": {
+    "$date": "2025-03-27T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fbb"
+  },
+  "date": {
+    "$date": "2025-03-28T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce27a744fbb4a733370fbc"
+  },
+  "date": {
+    "$date": "2025-03-29T19:00:00.000Z"
+  },
+  "available": true,
+  "sponsorId": null,
+  "sponsorName": null,
+  "notes": "",
+  "year": 2025,
+  "__v": 0,
+  "createdAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T23:43:35.515Z"
+  }
+}]

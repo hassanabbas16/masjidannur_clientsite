@@ -1,0 +1,21 @@
+[{
+  "_id": {
+    "$oid": "67ce0bc879db3f6c4ed79dc8"
+  },
+  "title": "Ramadan Dua A Day",
+  "description": "Ramadan Dua A Day: A Journey of Faith and Reflection\n\n\"Ramadan Dua A Day\" is an enriching initiative designed to deepen your spiritual connection during the holy month of Ramadan. Each day, participants are encouraged to focus on a specific dua (supplication), allowing for a profound exploration of its meaning, significance, and the virtues associated with it. This practice not only enhances personal devotion but also fosters a sense of community, as individuals share their experiences and insights.\n\nThroughout the month, each dua highlights themes of gratitude, forgiveness, compassion, and humility, encouraging individuals to reflect on their lives and their relationship with Allah. Daily prompts may include suggested prayers, context behind the supplications, and tips for incorporating them into daily routines. \n\nJoin us in \"Ramadan Dua A Day\" for a month filled with prayer, reflection, and spiritual growth as we collectively strive to strengthen our faith and seek blessings during this sacred time. Let each dua be a step towards spiritual transformation and a reminder of the power of prayer in our lives.",
+  "resourceType": "link",
+  "url": "https://archive.nyu.edu/bitstream/2451/61982/2/Dua%20a%20Day%20Ramadan.pdf",
+  "fileSize": "",
+  "category": "dua",
+  "isVisible": true,
+  "order": 0,
+  "year": 2025,
+  "createdAt": {
+    "$date": "2025-03-09T21:44:40.135Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T21:44:40.135Z"
+  },
+  "__v": 0
+}]

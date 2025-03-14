@@ -1,0 +1,64 @@
+[{
+  "_id": {
+    "$oid": "67cc17d44be09c1b35d2bab1"
+  },
+  "name": "Zakat Ul Mal",
+  "description": "Zakat is one of the five pillars of Islam, representing mandatory almsgiving aimed at purifying wealth. Muslims who possess a certain amount of wealth (nisab) are required to donate 2.5% annually to those in need. The funds can be given to eight categories of recipients, including the poor, needy, and in the cause of Allah. Zakat emphasizes social responsibility, promotes community welfare, and differs from voluntary charity (Sadaqah), which is not obligatory.",
+  "isActive": true,
+  "icon": "DollarSign",
+  "createdAt": {
+    "$date": "2025-03-08T10:11:32.009Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T22:20:38.341Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc1ecbe78a9c3cda9c8baa"
+  },
+  "name": "Fitrana",
+  "description": "Fitrana, or Zakat al-Fitr, is a mandatory charity for Muslims, given before the Eid al-Fitr prayer at the end of Ramadan. Its purpose is to purify the fast and ensure the poor can celebrate Eid. It is obligatory for every Muslim who can afford it, including children, and is calculated based on staple food items, typically a fixed monetary amount. The funds should be distributed to the needy, promoting community solidarity and compassion.",
+  "isActive": true,
+  "icon": "Heart",
+  "createdAt": {
+    "$date": "2025-03-08T10:41:15.494Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T10:41:23.956Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67cc575f5dc257f0773c4941"
+  },
+  "name": "Iftar Sponsorship",
+  "description": "Sponsoring an iftar is a beautiful way to contribute to our community during the blessed month of Ramadan. Your generosity helps provide a nutritious meal for those breaking their fast at the masjid.",
+  "isActive": false,
+  "icon": "Heart",
+  "createdAt": {
+    "$date": "2025-03-08T14:42:39.961Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-08T21:04:27.702Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ce146944fbb4a73337052d"
+  },
+  "name": "Prison Dawah",
+  "description": "We will be going to the prison, to give dawah about the masjid and islam.",
+  "isActive": true,
+  "icon": "DollarSign",
+  "createdAt": {
+    "$date": "2025-03-09T22:21:29.685Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T22:21:29.685Z"
+  },
+  "__v": 0
+}]

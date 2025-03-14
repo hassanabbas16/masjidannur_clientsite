@@ -40,6 +40,7 @@ interface RamadanSettings {
   aboutDescription: string
   additionalInfo: string[]
   isActive: boolean
+  iftarEnabled: boolean
 }
 
 interface RamadanDate {
@@ -351,14 +352,36 @@ export default function RamadanManagementPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="iftar-cost">Iftar Cost ($)</Label>
-                  <Input
-                    id="iftar-cost"
-                    type="number"
-                    value={settings?.iftarCost || 500}
-                    onChange={(e) => setSettings({ ...settings!, iftarCost: Number.parseFloat(e.target.value) })}
-                  />
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Enable Iftar Cost</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Toggle iftar sponsorship payment requirement
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settings?.iftarEnabled}
+                      onCheckedChange={(checked) =>
+                        setSettings({ ...settings!, iftarEnabled: checked })
+                      }
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label>Iftar Cost</Label>
+                    <Input
+                      type="number"
+                      value={settings?.iftarCost}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings!,
+                          iftarCost: parseFloat(e.target.value) || 0,
+                        })
+                      }
+                      disabled={!settings?.iftarEnabled}
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">

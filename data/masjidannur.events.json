@@ -1,0 +1,160 @@
+[{
+  "_id": {
+    "$oid": "67cade0c076db5c6cf2e573d"
+  },
+  "title": " Introduction to Islamic Studies: Foundations of Faith",
+  "description": "This Darso Tadrees session will provide an in-depth introduction to the foundational teachings of Islam. The session is designed for students who are eager to gain a better understanding of the core principles of Islamic faith, including the essential elements of Iman (faith), worship, and daily practices.",
+  "date": {
+    "$date": "2025-03-12T17:00:00.000Z"
+  },
+  "endDate": {
+    "$date": "2025-03-12T07:00:00.000Z"
+  },
+  "location": "FortSmith, Arkansas",
+  "image": "https://images.unsplash.com/photo-1590075865003-e48277faa558?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "category": [
+    "Community",
+    "Worship",
+    "Other"
+  ],
+  "organizer": "Masjid an Nur",
+  "contactEmail": "Sunnie.islamic.center@gmail.com",
+  "additionalDetails": "The lesson will cover the following key areas:\n\nIntroduction to Aqeedah: A breakdown of the key beliefs in Islam, focusing on the Oneness of Allah, the prophethood, and the afterlife.\nThe Five Pillars of Islam: A detailed explanation of Shahada (faith declaration), Salah (prayer), Zakat (charity), Sawm (fasting), and Hajj (pilgrimage).\nImportance of Qur'an and Hadith: Discussing the Qur'an as the primary source of Islamic law and the role of Hadith in complementing the teachings of the Qur'an.\nThe Role of the Mosque: Understanding the significance of the mosque in a Muslim's spiritual and communal life.\nDaily Practices in Islam: An exploration of the daily rituals, etiquette, and guidelines that shape the life of a practicing Muslim.\nThe session will be conducted with a blend of lectures, Q&A discussions, and interactive activities to encourage active participation from the students. Emphasis will be placed on the practical application of these teachings in daily life, helping students align their actions with Islamic values.\n\nBy the end of the session, participants will have a solid foundation in understanding Islamic principles and be better equipped to implement them in their daily lives. The session will also encourage further exploration and deeper study of Islamic texts.\n\nTarget Audience:\nThis session is suitable for students of all levels who are new to Islamic studies or seeking to strengthen their understanding of the basic principles of Islam. It is also beneficial for individuals looking to refresh their foundational knowledge and deepen their faith.\n\n\nInstructor:\nThe session will be led by a qualified Islamic scholar with expertise in Aqeedah, Fiqh, and Tafseer, who has extensive experience in teaching at both beginner and advanced levels.\n\nSession Duration: 2 hours\nLanguage: Arabic (with English translations provided as needed)",
+  "isVisible": true,
+  "createdAt": {
+    "$date": "2025-03-07T11:52:44.393Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T00:27:34.213Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ccc6852579f07d3b61d6f9"
+  },
+  "title": "Ramadan Night Prayers",
+  "description": "Join us for special night prayers during the blessed month of Ramadan.",
+  "date": {
+    "$date": "2025-03-15T19:00:00.000Z"
+  },
+  "endDate": {
+    "$date": "2025-03-17T19:00:00.000Z"
+  },
+  "location": "Main Prayer Hall",
+  "image": "/placeholder.svg?height=400&width=600",
+  "category": [
+    "Worship"
+  ],
+  "organizer": "Masjid Committee",
+  "contactEmail": "contact@masjid.org",
+  "additionalDetails": "",
+  "isVisible": false,
+  "updatedAt": {
+    "$date": "2025-03-09T22:13:16.469Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ccc6852579f07d3b61d6fa"
+  },
+  "title": "Community Iftar",
+  "description": "Break your fast with the community. All are welcome to join this blessed gathering.",
+  "date": {
+    "$date": "2024-03-20T18:30:00.000Z"
+  },
+  "endDate": {
+    "$date": "2024-03-20T21:00:00.000Z"
+  },
+  "location": "Masjid Courtyard",
+  "image": "/placeholder.svg?height=400&width=600",
+  "category": [
+    "Community"
+  ],
+  "organizer": "Masjid Committee",
+  "contactEmail": "contact@masjid.org",
+  "additionalDetails": "",
+  "isVisible": false,
+  "updatedAt": {
+    "$date": "2025-03-09T23:04:17.054Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ccc6852579f07d3b61d6fb"
+  },
+  "title": "Islamic Finance Workshop",
+  "description": "Learn about Islamic principles of finance and investment.",
+  "date": {
+    "$date": "2024-04-05T14:00:00.000Z"
+  },
+  "endDate": {
+    "$date": "2024-04-05T17:00:00.000Z"
+  },
+  "location": "Education Center",
+  "image": "/placeholder.svg?height=400&width=600",
+  "category": [
+    "Education"
+  ],
+  "organizer": "Islamic Finance Society",
+  "contactEmail": "info@ifs.org",
+  "additionalDetails": "",
+  "isVisible": true,
+  "updatedAt": {
+    "$date": "2025-03-08T23:32:28.942Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ccc6852579f07d3b61d6fc"
+  },
+  "title": "Youth Quran Competition",
+  "description": "Annual Quran recitation and memorization competition for youth.",
+  "date": {
+    "$date": "2024-04-15T10:00:00.000Z"
+  },
+  "endDate": {
+    "$date": "2024-04-15T14:00:00.000Z"
+  },
+  "location": "Main Prayer Hall",
+  "image": "/placeholder.svg?height=400&width=600",
+  "category": [
+    "Youth"
+  ],
+  "organizer": "Masjid Committee",
+  "contactEmail": "contact@masjid.org",
+  "additionalDetails": "",
+  "isVisible": true,
+  "updatedAt": {
+    "$date": "2025-03-08T23:32:28.942Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67ce124744fbb4a73337023a"
+  },
+  "title": "Test Event",
+  "description": "This is a test",
+  "date": {
+    "$date": "2025-03-10T05:00:00.000Z"
+  },
+  "endDate": {
+    "$date": "2025-03-09T22:11:54.494Z"
+  },
+  "location": "Masjid Al Noor",
+  "image": "/placeholder.svg?height=400&width=600",
+  "category": [
+    "Charity"
+  ],
+  "organizer": "Masjid Al Noor",
+  "contactEmail": "test@test.com",
+  "additionalDetails": "This is a test number 2",
+  "isVisible": true,
+  "createdAt": {
+    "$date": "2025-03-09T22:12:23.311Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T22:12:23.311Z"
+  },
+  "__v": 0
+}]

@@ -1,0 +1,70 @@
+[{
+  "_id": {
+    "$oid": "67cb97e521cc62ae8eb08cab"
+  },
+  "hero": {
+    "title": "About Masjid AnNoor",
+    "subtitle": "Our journey, mission, and commitment to the community"
+  },
+  "sidebar": {
+    "image": "https://muslimguide.com//storage/mediacenter/US/AR/Fort%20Smith/thumb/US_AR_FortSmith_FSIC_MasjNoor__W-Min-GS_103_150726_01_480X360.JPG",
+    "visitTitle": "Visit Us",
+    "visitDescription": "We welcome you to visit Masjid AnNoor and be part of our growing community.",
+    "address": "1800 S. Albert Pike Ave\nFort Smith, AR 72903"
+  },
+  "journey": {
+    "title": "Our Journey",
+    "content": [
+      "Sunnie Islamic Center was founded in 1993 with a vision to serve the spiritual, educational, and social needs of the Muslim community. What began in a small commercial unit has grown into a thriving center of worship and community support.",
+      "In 2005, the founders acquired 1800 S Albert Pike Ave, which is now known as Masjid AnNoor, a beacon of faith and service in our community."
+    ]
+  },
+  "mission": {
+    "title": "Our Mission",
+    "content": "At Sunnie Islamic Center, we are dedicated to fostering a welcoming and inclusive environment for all. Our mission is to provide a space for prayer, learning, and community engagement, rooted in the teachings of Islam. Through educational programs, humanitarian initiatives, and outreach efforts, we strive to strengthen our community and contribute positively to society."
+  },
+  "services": {
+    "title": "Our Services",
+    "items": [
+      {
+        "title": "Daily & Jumu'ah Prayers",
+        "description": "A place for spiritual growth and connection.",
+        "_id": {
+          "$oid": "67cb97e521cc62ae8eb08cac"
+        }
+      },
+      {
+        "title": "Islamic Education",
+        "description": "Classes and programs for children and adults.",
+        "_id": {
+          "$oid": "67cb97e521cc62ae8eb08cad"
+        }
+      },
+      {
+        "title": "Community Outreach",
+        "description": "Humanitarian efforts, including aid for those in need.",
+        "_id": {
+          "$oid": "67cb97e521cc62ae8eb08cae"
+        }
+      },
+      {
+        "title": "Youth & Family Programs",
+        "description": "Strengthening faith and values across generations.",
+        "_id": {
+          "$oid": "67cb97e521cc62ae8eb08caf"
+        }
+      }
+    ]
+  },
+  "join": {
+    "title": "Join Us",
+    "content": "We welcome you to visit Masjid Annoor and be part of our growing community. Whether you seek a place of worship, learning, or support, Sunnie Islamic Center is here for you."
+  },
+  "createdAt": {
+    "$date": "2025-03-08T01:05:41.039Z"
+  },
+  "updatedAt": {
+    "$date": "2025-03-09T22:42:34.739Z"
+  },
+  "__v": 0
+}]

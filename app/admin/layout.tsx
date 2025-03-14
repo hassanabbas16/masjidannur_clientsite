@@ -18,6 +18,12 @@ import {
   Mail,
   Menu,
   X,
+  Heart,
+  FileText,
+  Info,
+  Moon,
+  BookMarked,
+  LayoutDashboard,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -81,17 +87,61 @@ export default function AdminLayout({
   }
 
   const menuItems = [
-    { path: "/admin", label: "Dashboard", icon: Home },
-    { path: "/admin/events", label: "Events", icon: Calendar },
-    { path: "/admin/programs", label: "Programs", icon: BookOpen },
-    { path: "/admin/about", label: "About", icon: Bot},
-    { path: "/admin/resources", label: "Resources", icon: Users },
-    { path: "/admin/donations", label: "Donations", icon: Mail },
-    { path: "/admin/ramadan-management", label: "Ramadan Sponsorship", icon: Settings },
-    { path: "/admin/ramadan/events", label: "Ramadan Events", icon: Settings },
-    { path: "/admin/ramadan/resources", label: "Ramadan Resources", icon: Settings },
-    { path: "/admin/home-page", label: "Home", icon: Settings },
-    { path: "/admin/site-settings", label: "Site Settings", icon: Settings },
+    {
+      label: "Dashboard",
+      path: "/admin",
+      icon: Home
+    },
+    {
+      label: "Events",
+      path: "/admin/events",
+      icon: Calendar
+    },
+    {
+      label: "Programs",
+      path: "/admin/programs",
+      icon: BookOpen
+    },
+    {
+      label: "Donations",
+      path: "/admin/donations",
+      icon: Heart
+    },
+    {
+      label: "Resources",
+      path: "/admin/resources",
+      icon: FileText
+    },
+    {
+      label: "About",
+      path: "/admin/about",
+      icon: Info
+    },
+    {
+      label: "Ramadan Management",
+      path: "/admin/ramadan-management",
+      icon: Moon
+    },
+    {
+      label: "Ramadan Events",
+      path: "/admin/ramadan/events",
+      icon: Users
+    },
+    {
+      label: "Ramadan Resources",
+      path: "/admin/ramadan/resources",
+      icon: BookMarked
+    },
+    {
+      label: "Site Settings",
+      path: "/admin/site-settings",
+      icon: Settings
+    },
+    {
+      label: "Home Settings",
+      path: "/admin/home-page",
+      icon: LayoutDashboard
+    }
   ]
 
   const sidebarBgColor ="bg-[#0D7A3B]"
@@ -118,7 +168,6 @@ export default function AdminLayout({
           sidebarTextColor,
           sidebarBorderColor,
           isCollapsed ? "w-20" : "w-64",
-          // Hide on mobile, show on desktop
           "hidden lg:block",
         )}
       >
@@ -147,7 +196,23 @@ export default function AdminLayout({
           </button>
         </div>
 
-        <nav className="mt-6">
+        <nav className="mt-6 h-[calc(100vh-120px)] overflow-y-auto scrollbar-thin">
+          <style jsx global>{`
+            .scrollbar-thin::-webkit-scrollbar {
+              width: 4px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-track {
+              background: rgba(255, 255, 255, 0.1);
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb {
+              background: rgba(255, 255, 255, 0.2);
+              border-radius: 2px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+              background: rgba(255, 255, 255, 0.3);
+            }
+          `}</style>
+
           <ul className="space-y-2">
             {menuItems.map((item, index) => {
               const isItemActive =
@@ -184,38 +249,32 @@ export default function AdminLayout({
                 </li>
               )
             })}
+            <li>
+              <button
+                onClick={handleLogout}
+                className={cn(
+                  "flex items-center text-white rounded-md p-3 w-full transition-all duration-200 group",
+                  sidebarHoverColor,
+                  isCollapsed ? "justify-center" : "justify-start",
+                )}
+              >
+                <LogOut className="w-6 h-6" />
+                <span
+                  className={cn("ml-2 transition-opacity duration-200", 
+                    isCollapsed ? "opacity-0 hidden" : "opacity-100"
+                  )}
+                >
+                  Logout
+                </span>
+                {isCollapsed && (
+                  <div className="absolute left-20 bg-[#0B6A34] text-white px-3 py-2 rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    Logout
+                  </div>
+                )}
+              </button>
+            </li>
           </ul>
         </nav>
-
-        {/* Logout button */}
-        <div
-          className={cn(
-            "absolute bottom-0 left-0 w-full p-4 border-t",
-            sidebarBorderColor,
-            isCollapsed ? "flex justify-center" : "",
-          )}
-        >
-          <button
-            onClick={handleLogout}
-            className={cn(
-              "flex items-center text-white rounded-md p-3 w-full transition-all duration-200 group",
-              sidebarHoverColor,
-              isCollapsed ? "justify-center" : "justify-start",
-            )}
-          >
-            <LogOut className="w-6 h-6" />
-            <span
-              className={cn("ml-2 transition-opacity duration-200", isCollapsed ? "opacity-0 hidden" : "opacity-100")}
-            >
-              Logout
-            </span>
-            {isCollapsed && (
-              <div className="absolute left-20 bg-[#0B6A34] text-white px-3 py-2 rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                Logout
-              </div>
-            )}
-          </button>
-        </div>
       </aside>
 
       {/* Mobile Sidebar - Drawer style */}
