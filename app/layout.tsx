@@ -8,7 +8,7 @@ import Footer from "@/components/footer"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Masjid AnNoor",
+  title: "Masjid Annoor",
   description: "Masjid AnNoor - Fort Smith, AR",
   icons: {
     icon: '/webicon.png', 

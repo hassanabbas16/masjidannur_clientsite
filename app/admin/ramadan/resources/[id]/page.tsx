@@ -1,11 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import RamadanResourceForm from "@/components/admin/ramadan-resource-form"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
 
 export default function EditRamadanResourcePage() {
   const params = useParams()
+  const router = useRouter() // Initialize the router
   const [resource, setResource] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -49,10 +52,16 @@ export default function EditRamadanResourcePage() {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Edit Ramadan Resource</h1>
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center space-x-4">
+        <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+      </div>
+
+      <h1 className="text-3xl font-bold sm:text-4xl">Edit Ramadan Resource</h1>
       <RamadanResourceForm initialData={resource} isEditing />
     </div>
   )
 }
-

@@ -69,7 +69,7 @@ export default function PaymentForm({ setErrorMessage, onPaymentSuccess }: Payme
   };
 
   return (
-    <div className="space-y-4 max-w-lg mx-auto px-4 sm:px-6">
+    <div className="space-y-4 max-w-lg mx-auto px-4 sm:px-6 h-[90vh] overflow-auto">
       <div className="min-h-[200px]">
         <PaymentElement
           options={{ layout: isMobile ? "accordion" : "tabs" }}
