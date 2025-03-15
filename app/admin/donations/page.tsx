@@ -96,14 +96,12 @@ export default function DonationsPage() {
   }
 
   const exportToCsv = () => {
-    // Filter donations based on search term
     const filteredDonations = donations.filter(
       (donation) =>
         donation.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (donation.name && donation.name.toLowerCase().includes(searchTerm.toLowerCase())),
     )
 
-    // Create CSV content
     const headers = ["Date", "Name", "Email", "Type", "Amount", "Total Amount", "Status"]
     const rows = filteredDonations.map((donation) => [
       new Date(donation.createdAt).toLocaleDateString(),
@@ -117,7 +115,6 @@ export default function DonationsPage() {
 
     const csvContent = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n")
 
-    // Create download link
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
     const url = URL.createObjectURL(blob)
     const link = document.createElement("a")
@@ -180,13 +177,20 @@ export default function DonationsPage() {
   const filteredDonations = getFilteredDonations();
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Donations</h1>
-        <div className="flex items-center gap-4">
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+        {/* Back Button */}
+        <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+
+        <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">Donations</h1>
+
+        <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
           <Button 
             variant="secondary"
-            className="text-foreground"
+            className="text-foreground w-full sm:w-auto"
             onClick={exportToCsv}
           >
             <Download className="mr-2 h-4 w-4" />
@@ -194,7 +198,7 @@ export default function DonationsPage() {
           </Button>
           <Button 
             variant="secondary"
-            className="text-foreground"
+            className="text-foreground w-full sm:w-auto"
             asChild
           >
             <Link href="/admin/donations/types">
@@ -209,7 +213,7 @@ export default function DonationsPage() {
           <CardTitle>Donation Records</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -222,7 +226,7 @@ export default function DonationsPage() {
 
             <div className="flex flex-wrap gap-2">
               <Select value={selectedType} onValueChange={setSelectedType} defaultValue="all">
-                <SelectTrigger className="w-[160px]">
+                <SelectTrigger className="w-full sm:w-[160px]">
                   <SelectValue placeholder="All Types" />
                 </SelectTrigger>
                 <SelectContent>
@@ -236,7 +240,7 @@ export default function DonationsPage() {
               </Select>
 
               <Select value={selectedStatus} onValueChange={setSelectedStatus} defaultValue="all">
-                <SelectTrigger className="w-[160px]">
+                <SelectTrigger className="w-full sm:w-[160px]">
                   <SelectValue placeholder="All Statuses" />
                 </SelectTrigger>
                 <SelectContent>
@@ -250,7 +254,7 @@ export default function DonationsPage() {
 
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-[240px] justify-start text-left font-normal">
+                  <Button variant="outline" className="w-full sm:w-[240px] justify-start text-left font-normal">
                     <Calendar className="mr-2 h-4 w-4" />
                     {date?.from ? (
                       date.to ? (
@@ -353,4 +357,3 @@ export default function DonationsPage() {
     </div>
   )
 }
-

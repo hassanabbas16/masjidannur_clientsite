@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import AboutForm from "@/components/admin/about-form"
+import { ChevronLeft } from "lucide-react"
 
 interface AboutData {
   _id: string
@@ -82,12 +83,17 @@ export default function AdminAboutPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">About Page Management</h1>
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
+      {/* Back Button Section */}
+      <div className="flex items-center gap-4 flex-col sm:flex-row sm:items-center sm:gap-6">
+        <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">About Page Management</h1>
         <Button 
           variant="secondary"
-          className="text-foreground"
+          className="text-foreground w-full sm:w-auto"
           onClick={() => router.push("/about")}
         >
           View About Page
@@ -105,4 +111,3 @@ export default function AdminAboutPage() {
     </div>
   )
 }
-

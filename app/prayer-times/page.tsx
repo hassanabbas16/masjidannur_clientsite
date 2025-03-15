@@ -131,66 +131,80 @@ export default function PrayerTimesPage() {
   }, [prayerTimesData, selectedMonth]);
 
   return (
-    <div className="container px-4 md:px-6 py-12">
-      <h1 className="text-3xl font-bold mb-8 text-center">Prayer Times</h1>
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-green-50 to-white">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden py-20">
+        <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>
+        <div className="container relative py-20 md:py-28 flex flex-col items-center text-center">
+          <h1 className="font-heading font-bold text-4xl md:text-5xl lg:text-6xl max-w-4xl mb-6">
+            Prayer Times
+          </h1>
+          <p className="text-lg md:text-xl text-white/90 max-w-2xl">
+            Stay on top of prayer timings with accurate data tailored for your location.
+          </p>
+        </div>
+      </section>
 
-      <div className="max-w-md mx-auto mb-8">
-        <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select month" />
-          </SelectTrigger>
-          <SelectContent>
-            {months.map((month) => (
-              <SelectItem key={month} value={month}>
-                {month}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Prayer Times Content */}
+      <div className="container px-4 md:px-6 py-12">
+        <div className="max-w-md mx-auto mb-8">
+          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select month" />
+            </SelectTrigger>
+            <SelectContent>
+              {months.map((month) => (
+                <SelectItem key={month} value={month}>
+                  {month}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-      <Card className="overflow-hidden">
-        <CardHeader className="bg-[#0D7A3B] text-white">
-          <CardTitle className="text-center">{selectedMonth} Prayer Times</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-muted">
-                  <th className="px-4 py-3 text-left">Date</th>
-                  <th className="px-4 py-3 text-left">Day</th>
-                  <th className="px-4 py-3 text-center">Fajr</th>
-                  <th className="px-4 py-3 text-center">Sunrise</th>
-                  <th className="px-4 py-3 text-center">Dhuhr</th>
-                  <th className="px-4 py-3 text-center">Asr</th>
-                  <th className="px-4 py-3 text-center">Maghrib</th>
-                  <th className="px-4 py-3 text-center">Isha</th>
-                </tr>
-              </thead>
-              <tbody>
-                {prayerTimesData[`${selectedMonth} ${currentYear}`]?.map((day, index) => (
-                  <tr
-                    key={day.date}
-                    ref={(el) => { rowRefs.current[index] = el; }}
-                    className={index % 2 === 0 ? "bg-white" : "bg-muted/30"}
-                    style={parseInt(day.date, 10) === parseInt(currentDate, 10) && selectedMonth === currentMonth ? { backgroundColor: "#0D8A3B" } : {}}
-                  >
-                    <td className="px-4 py-3 border-t">{day.date}</td>
-                    <td className="px-4 py-3 border-t">{day.day}</td>
-                    <td className="px-4 py-3 border-t text-center">{day.fajr}</td>
-                    <td className="px-4 py-3 border-t text-center">{day.sunrise}</td>
-                    <td className="px-4 py-3 border-t text-center">{day.dhuhr}</td>
-                    <td className="px-4 py-3 border-t text-center">{day.asr}</td>
-                    <td className="px-4 py-3 border-t text-center">{day.maghrib}</td>
-                    <td className="px-4 py-3 border-t text-center">{day.isha}</td>
+        <Card className="overflow-hidden">
+          <CardHeader className="bg-[#0D7A3B] text-white">
+            <CardTitle className="text-center">{selectedMonth} Prayer Times</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-muted">
+                    <th className="px-4 py-3 text-left">Date</th>
+                    <th className="px-4 py-3 text-left">Day</th>
+                    <th className="px-4 py-3 text-center">Fajr</th>
+                    <th className="px-4 py-3 text-center">Sunrise</th>
+                    <th className="px-4 py-3 text-center">Dhuhr</th>
+                    <th className="px-4 py-3 text-center">Asr</th>
+                    <th className="px-4 py-3 text-center">Maghrib</th>
+                    <th className="px-4 py-3 text-center">Isha</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+                </thead>
+                <tbody>
+                  {prayerTimesData[`${selectedMonth} ${currentYear}`]?.map((day, index) => (
+                    <tr
+                      key={day.date}
+                      ref={(el) => { rowRefs.current[index] = el; }}
+                      className={index % 2 === 0 ? "bg-white" : "bg-muted/30"}
+                      style={parseInt(day.date, 10) === parseInt(currentDate, 10) && selectedMonth === currentMonth ? { backgroundColor: "#0D8A3B" } : {}}
+                    >
+                      <td className="px-4 py-3 border-t">{day.date}</td>
+                      <td className="px-4 py-3 border-t">{day.day}</td>
+                      <td className="px-4 py-3 border-t text-center">{day.fajr}</td>
+                      <td className="px-4 py-3 border-t text-center">{day.sunrise}</td>
+                      <td className="px-4 py-3 border-t text-center">{day.dhuhr}</td>
+                      <td className="px-4 py-3 border-t text-center">{day.asr}</td>
+                      <td className="px-4 py-3 border-t text-center">{day.maghrib}</td>
+                      <td className="px-4 py-3 border-t text-center">{day.isha}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

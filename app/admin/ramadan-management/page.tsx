@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { format } from "date-fns"
-import { CalendarIcon, Plus, Trash2, Save, RefreshCw } from "lucide-react"
+import { CalendarIcon, Plus, Trash2, Save, RefreshCw, ArrowLeft } from "lucide-react"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -315,6 +315,11 @@ export default function RamadanManagementPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back
+      </Button>
+
         <h1 className="text-3xl font-bold">Ramadan Management</h1>
         <div className="flex items-center gap-2">
           <Label htmlFor="year-select">Year:</Label>

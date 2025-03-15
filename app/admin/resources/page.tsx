@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Edit, Plus, Search, Trash2 } from "lucide-react"
+import { Edit, Plus, Search, Trash2, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -114,11 +114,16 @@ export default function AdminResourcesPage() {
   )
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-bold">Resources Management</h1>
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8">
+      {/* Back Button */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+        <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">Resources Management</h1>
         <Button asChild>
-          <Link href="/admin/resources/new">
+          <Link href="/admin/resources/new" className="w-full sm:w-auto">
             <Plus className="mr-2 h-4 w-4" />
             Add New Resource
           </Link>
@@ -235,4 +240,3 @@ export default function AdminResourcesPage() {
     </div>
   )
 }
-

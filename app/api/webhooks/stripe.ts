@@ -30,6 +30,7 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err) {
+    console.error('Error constructing event:', err);
     return NextResponse.json({ error: "Webhook error" }, { status: 400 });
   }
 
@@ -39,7 +40,6 @@ export async function POST(req: Request) {
     try {
       await dbConnect();
 
-      // Extract the date ID and sponsor name from metadata
       const { dateId, sponsorName } = paymentIntent.metadata;
 
       if (!dateId) {
@@ -65,40 +65,28 @@ export async function POST(req: Request) {
 
       // Send confirmation email if email is available
       if (paymentIntent.receipt_email) {
-        await sendConfirmationEmail(
-          paymentIntent.receipt_email,
-          paymentIntent.amount / 100,
-          "Iftar",
-          format(new Date(), "MMMM dd, yyyy")
-        );
+        try {
+          await sendConfirmationEmail(
+            paymentIntent.receipt_email,
+            paymentIntent.amount / 100,
+            "Iftar",
+            format(new Date(), "MMMM dd, yyyy")
+          );
+        } catch (emailError) {
+          console.error("Error sending confirmation email:", emailError);
+        }
       }
 
+      // Return a successful response immediately after processing
       return NextResponse.json({ success: true });
     } catch (error) {
       console.error("Error processing webhook:", error);
-      return NextResponse.json(
-        { error: "Error processing webhook" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "Error processing webhook" }, { status: 500 });
     }
   }
 
+  // Handle other webhook types if necessary
   return NextResponse.json({ received: true });
-}
-
-// Function to send a thank you email to the donor
-async function sendThankYouEmail(email: string, amount: string, donationType: string, coverFees: boolean, date: number) {
-  const formattedDate = format(new Date(date * 1000), 'MMMM d, yyyy');
-  const msg = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: `Thank you for your ${donationType} Sponsorship`,
-    text: `Dear Donor,\n\nThank you for your generous ${donationType} sponsorship of $${amount}. Your support is greatly appreciated. The donation was made on ${formattedDate}.\n\nBest regards,\nMasjid Annoor`,
-    html: `<p>Dear Donor,</p><p>Thank you for your generous ${donationType} sponsorship of $${amount}. Your support is greatly appreciated. The donation was made on ${formattedDate}.</p><p>Best regards,<br>Masjid Annoor</p>`,
-  };
-
-  // Send the email
-  await transporter.sendMail(msg);
 }
 
 // Function to send a confirmation email
@@ -111,6 +99,11 @@ async function sendConfirmationEmail(email: string, amount: number, donationType
     html: `<p>Dear Donor,</p><p>We have received your ${donationType} sponsorship of $${amount}. Your support is greatly appreciated. The donation was made on ${date}.</p><p>Best regards,<br>Masjid Annoor</p>`,
   };
 
-  // Send the email
-  await transporter.sendMail(msg);
+  try {
+    // Send the email
+    await transporter.sendMail(msg);
+  } catch (emailError) {
+    console.error("Error sending confirmation email:", emailError);
+    throw new Error("Error sending confirmation email");
+  }
 }

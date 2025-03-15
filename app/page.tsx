@@ -112,10 +112,10 @@ export default function Home() {
       <section className="relative bg-[#0D7A3B] text-white overflow-hidden">
         <div className="absolute inset-0 bg-golden-pattern opacity-40"></div>
         <div className="container relative py-20 md:py-28 flex flex-col items-center text-center">
-          <h1 className="font-heading font-bold text-4xl md:text-5xl lg:text-6xl max-w-4xl mb-6">
+          <h1 className="font-heading font-bold text-4xl sm:text-5xl md:text-6xl max-w-4xl mb-6">
             {settings.heroTitle}
           </h1>
-          <p className="text-lg md:text-xl text-white/90 max-w-2xl mb-10">{settings.heroSubtitle}</p>
+          <p className="text-lg sm:text-xl text-white/90 max-w-2xl mb-10">{settings.heroSubtitle}</p>
           <div className="flex flex-wrap gap-6 justify-center">
             {settings.heroButtonPrimary.isVisible && (
               <Button
@@ -141,7 +141,7 @@ export default function Home() {
       </section>
 
       {/* Main Buttons Section */}
-      <section className="container px-4 md:px-6 -mt-10 relative z-10">
+      <section className="container px-4 sm:px-6 -mt-10 relative z-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {settings.mainButtons
             .filter((button) => button.isVisible)
@@ -164,19 +164,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Events Carousel */}
+      {/* Events Section */}
       {settings.showEventsSection && events.length > 0 && (
-        <section className="container py-8">
-          <h2 className="text-3xl font-bold mb-6">Upcoming Events</h2>
+        <section className="container py-6 sm:py-8 md:py-10 mt-12 sm:mt-16 md:mt-24 relative">
+        <div className="relative mb-4 sm:mb-6">
+          {/* Center aligned heading and text */}
+          <div className="text-center mx-auto max-w-3xl">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold gradient-heading mb-2 sm:mb-3">
+              Upcoming Events
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Join us for these special occasions at Masjid AnNoor
+            </p>
+          </div>
+
+          {/* Absolutely positioned button on large screens, centered on mobile */}
+          <div className="mt-4 md:mt-0 flex justify-center md:absolute md:right-8 md:top-1/2 md:-translate-y-1/2">
+            <Button asChild variant="outline" className="border-primary/20 text-primary hover:bg-primary/5">
+              <Link href="/event">View All Events</Link>
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-8 sm:mt-12 md:mt-16 lg:mt-24">
           <EventsSection events={events} />
+        </div>
         </section>
       )}
 
       {/* Prayer Times Widget */}
       <section className="bg-secondary py-16">
-        <div className="container px-4 md:px-6">
+        <div className="container px-4 sm:px-6">
           <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-heading font-bold gradient-heading mb-3">Today's Prayer Times</h2>
+            <h2 className="text-3xl sm:text-4xl font-heading font-bold gradient-heading mb-3">Today's Prayer Times</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">Join us for daily prayers at Masjid AnNoor</p>
           </div>
 
@@ -204,4 +224,3 @@ export default function Home() {
     </div>
   )
 }
-

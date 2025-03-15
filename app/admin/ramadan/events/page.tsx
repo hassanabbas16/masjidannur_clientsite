@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Edit, Plus, Search, Trash2, Calendar, Clock } from "lucide-react"
+import { Edit, Plus, Search, Trash2, Calendar, Clock, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -143,6 +143,10 @@ export default function RamadanEventsPage() {
 
   return (
     <div className="space-y-6">
+      <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto mb-4">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+      </Button>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-3xl font-bold">Ramadan Events</h1>
         <Button asChild>

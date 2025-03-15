@@ -29,6 +29,7 @@ import {
   Edit,
   Check,
   X,
+  ArrowLeft,
 } from "lucide-react"
 
 interface HomePageSettings {
@@ -321,7 +322,11 @@ export default function HomePageManagement() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-bold">Home Page Management</h1>
+        <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto mb-4">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        <h1 className="text-3xl font-bold text-center sm:text-left">Home Page Management</h1>
         <Button onClick={handleSaveSettings} disabled={saving}>
           {saving ? (
             <>
