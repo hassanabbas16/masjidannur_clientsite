@@ -99,9 +99,13 @@
         .regex(/^[a-zA-Z\s]+$/, "Name must only contain letters and spaces."),
       email: z.string().email({ message: "Please enter a valid email address." }),
       phone: z
-        .string()
-        .min(10, { message: "Please enter a valid phone number." })
-        .regex(/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number."),
+      .string()
+      .min(10, { message: "Please enter a valid phone number with at least 10 digits." })
+      .regex(
+        /^(?:\+?\d{1,3}[-.\s]?)?(\(?\d{1,3}\)?[-.\s]?)?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
+        "Please enter a valid phone number. Example: +1 123-456-7890 or 123-456-7890."
+      ),
+    
       amount: settings?.iftarEnabled 
         ? z.string()
           .regex(/^\d+(\.\d{1,2})?$/, "Please enter a valid amount (e.g., 10 or 10.50)")

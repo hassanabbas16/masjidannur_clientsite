@@ -63,9 +63,10 @@ const formSchema = z
         }
       },
       {
-        message: "Please enter a valid international phone number",
-      },
-    ),
+        message:
+          "Please enter a valid international phone number. Example: +1 123-456-7890 or +44 7911 123456.",
+      }
+    ),    
     anonymous: z.boolean().default(false),
     coverFees: z.boolean().default(true),
   })
