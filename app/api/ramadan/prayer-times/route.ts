@@ -2,6 +2,9 @@ import { NextResponse } from "next/server"
 import { getPrayerTimes, formatPrayerTimes, getNextPrayer, isRamadan, getRamadanDay } from "@/lib/prayer-times"
 import moment from "moment"
 
+// Add this line to make the route dynamic
+export const dynamic = "force-dynamic"
+
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url)

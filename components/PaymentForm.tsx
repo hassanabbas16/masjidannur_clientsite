@@ -1,36 +1,35 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js"
-import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
-import { type StripePaymentElementChangeEvent } from "@stripe/stripe-js"
+import { useState } from "react";
+import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PaymentFormProps {
-  setErrorMessage: (message: string | undefined) => void
-  onPaymentSuccess: (paymentIntentId: string) => void
+  setErrorMessage: (message: string | undefined) => void;
+  onPaymentSuccess?: (paymentIntentId: string) => void;
 }
 
 export default function PaymentForm({ setErrorMessage, onPaymentSuccess }: PaymentFormProps) {
-  const stripe = useStripe()
-  const elements = useElements()
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [isPaymentElementReady, setIsPaymentElementReady] = useState(false)
-  const [paymentMethodValid, setPaymentMethodValid] = useState(false)
-  const [localErrorMessage, setLocalErrorMessage] = useState<string>()
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isPaymentElementReady, setIsPaymentElementReady] = useState(false);
+  const [paymentMethodValid, setPaymentMethodValid] = useState(false);
+  const [localErrorMessage, setLocalErrorMessage] = useState<string>();
+  const isMobile = useIsMobile();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!stripe || !elements) {
-      return
+      return;
     }
 
-    setIsProcessing(true)
-    setLocalErrorMessage(undefined)
-    setErrorMessage(undefined)
+    setIsProcessing(true);
+    setLocalErrorMessage(undefined);
+    setErrorMessage(undefined);
 
     try {
       const { error, paymentIntent } = await stripe.confirmPayment({
@@ -39,38 +38,43 @@ export default function PaymentForm({ setErrorMessage, onPaymentSuccess }: Payme
         confirmParams: {
           return_url: `${window.location.origin}/donation-confirmation`,
         },
-      })
+      });
 
       if (error) {
-        setLocalErrorMessage(error.message)
-        setErrorMessage(error.message)
+        setLocalErrorMessage(error.message);
+        setErrorMessage(error.message);
       } else if (paymentIntent && paymentIntent.status === "succeeded") {
-        onPaymentSuccess(paymentIntent.id)
+        // Verify payment status and trigger database updates
+        const updateResponse = await fetch(`/api/payment-status?payment_intent=${paymentIntent.id}`, {
+          method: "GET",
+        });
+
+        if (!updateResponse.ok) {
+          throw new Error("Failed to update donation status in the database");
+        }
+
+        if (onPaymentSuccess) {
+          onPaymentSuccess(paymentIntent.id);
+        } else {
+          window.location.href = `/donation-confirmation?payment_intent=${paymentIntent.id}`;
+        }
       }
     } catch (error) {
-      console.error("Payment error:", error)
-      setLocalErrorMessage("An error occurred while processing your payment.")
-      setErrorMessage("An error occurred while processing your payment.")
+      console.error("Payment error:", error);
+      setLocalErrorMessage("An error occurred while processing your payment.");
+      setErrorMessage("An error occurred while processing your payment.");
     } finally {
-      setIsProcessing(false)
+      setIsProcessing(false);
     }
-  }
+  };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-w-lg mx-auto px-4 sm:px-6">
       <div className="min-h-[200px]">
         <PaymentElement
-          options={{ layout: "tabs" }}
-          onReady={() => {
-            setIsPaymentElementReady(true)
-          }}
-          onChange={(e: StripePaymentElementChangeEvent) => {
-            if (!e.complete) {
-              setPaymentMethodValid(false)
-            } else {
-              setPaymentMethodValid(e.complete)
-            }
-          }}
+          options={{ layout: isMobile ? "accordion" : "tabs" }}
+          onReady={() => setIsPaymentElementReady(true)}
+          onChange={(e) => setPaymentMethodValid(e.complete)}
         />
         {!isPaymentElementReady && <div className="text-gray-600 mt-2">Loading payment options...</div>}
       </div>
@@ -84,7 +88,7 @@ export default function PaymentForm({ setErrorMessage, onPaymentSuccess }: Payme
       <Button
         onClick={handleSubmit}
         disabled={!stripe || !isPaymentElementReady || isProcessing || !paymentMethodValid}
-        className="w-full"
+        className="w-full md:w-auto"
         aria-busy={isProcessing}
       >
         {isProcessing ? (
@@ -104,6 +108,5 @@ export default function PaymentForm({ setErrorMessage, onPaymentSuccess }: Payme
         </div>
       )}
     </div>
-  )
+  );
 }
-

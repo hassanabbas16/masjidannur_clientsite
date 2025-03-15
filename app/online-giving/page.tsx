@@ -13,9 +13,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { loadStripe } from "@stripe/stripe-js"
 import { Elements } from "@stripe/react-stripe-js"
 import PaymentForm from "@/components/PaymentForm"
-import { parsePhoneNumberWithError } from 'libphonenumber-js'
-import { ArrowLeft, ArrowRight, Heart, DollarSign, Mail, User, CheckCircle2, Phone, Loader2 } from 'lucide-react'
+import { parsePhoneNumberWithError } from "libphonenumber-js"
+import { ArrowLeft, ArrowRight, Heart, DollarSign, Mail, User, CheckCircle2, Phone } from "lucide-react"
 import { toast } from "react-hot-toast"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
 
@@ -29,6 +37,13 @@ interface PaymentIntentResponse {
   clientSecret: string
 }
 
+interface ConfirmationDetails {
+  amount: number
+  name: string
+  email: string
+  donationType: string
+}
+
 const formSchema = z
   .object({
     donationType: z.string({
@@ -37,22 +52,20 @@ const formSchema = z
     amount: z.string().regex(/^\d+(\.\d{1,2})?$/, "Please enter a valid amount (e.g., 10 or 10.50)"),
     name: z.string().optional(),
     email: z.string().email({ message: "Please enter a valid email address." }),
-    phone: z
-      .string()
-      .refine(
-        (value) => {
-          if (!value) return true
-          try {
-            const phoneNumber = parsePhoneNumberWithError(value)
-            return phoneNumber.isValid()
-          } catch {
-            return false
-          }
-        },
-        {
-          message: "Please enter a valid international phone number",
+    phone: z.string().refine(
+      (value) => {
+        if (!value) return true
+        try {
+          const phoneNumber = parsePhoneNumberWithError(value)
+          return phoneNumber.isValid()
+        } catch {
+          return false
         }
-      ),
+      },
+      {
+        message: "Please enter a valid international phone number",
+      },
+    ),
     anonymous: z.boolean().default(false),
     coverFees: z.boolean().default(true),
   })
@@ -61,12 +74,12 @@ const formSchema = z
     path: ["name"],
   })
 
-const formatCurrency = (value: number) => 
-  new Intl.NumberFormat('en-US', { 
-    style: 'currency', 
-    currency: 'USD',
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   }).format(value)
 
 export default function OnlineGivingPage() {
@@ -76,6 +89,7 @@ export default function OnlineGivingPage() {
   const [donationTypes, setDonationTypes] = useState<DonationType[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [confirmationDetails, setConfirmationDetails] = useState<ConfirmationDetails | null>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -148,7 +162,7 @@ export default function OnlineGivingPage() {
         }
 
         if (!response.ok) throw new Error("Error processing the payment. Please try again.")
-        
+
         const responseData: PaymentIntentResponse = await response.json()
         if (!responseData.clientSecret) throw new Error("Invalid response from payment API.")
 
@@ -160,6 +174,34 @@ export default function OnlineGivingPage() {
         setSubmitting(false)
       }
     }
+  }
+
+  const handlePaymentSuccess = async (paymentIntentId: string) => {
+    try {
+      const response = await fetch(`/api/payment-status?payment_intent=${paymentIntentId}`)
+      const data = await response.json()
+
+      if (data.status === "succeeded") {
+        // Get the donation amount
+        const amount = calculateTotal(form.getValues("amount")).toFixed(2)
+
+        // Redirect to the confirmation page with payment intent and amount
+        window.location.href = `/donation-confirmation?payment_intent=${paymentIntentId}&amount=${amount}`
+      } else {
+        setErrorMessage("Payment was not successful. Please try again.")
+      }
+    } catch (error) {
+      console.error("Error verifying payment:", error)
+      setErrorMessage("An error occurred while processing your payment.")
+    }
+  }
+
+  // Handle dialog close - reset form and return to step 1
+  const handleConfirmationClose = () => {
+    setConfirmationDetails(null)
+    form.reset()
+    setStep(1)
+    setClientSecret("")
   }
 
   const donationTypeIcons = {
@@ -226,15 +268,15 @@ export default function OnlineGivingPage() {
                 {step === 1
                   ? "Choose Donation Type & Amount"
                   : step === 2
-                  ? "Your Information"
-                  : "Complete Your Donation"}
+                    ? "Your Information"
+                    : "Complete Your Donation"}
               </CardTitle>
               <CardDescription>
                 {step === 1
                   ? "Select where you would like your donation to go"
                   : step === 2
-                  ? "Tell us a bit about yourself"
-                  : "Secure payment processing"}
+                    ? "Tell us a bit about yourself"
+                    : "Secure payment processing"}
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6">
@@ -269,7 +311,7 @@ export default function OnlineGivingPage() {
                                     >
                                       <div className="flex items-center">
                                         <div className="mr-3">
-                                          {donationTypeIcons[type.icon as keyof typeof donationTypeIcons] || 
+                                          {donationTypeIcons[type.icon as keyof typeof donationTypeIcons] ||
                                             donationTypeIcons["DollarSign"]}
                                         </div>
                                         <div className="font-medium">{type.name}</div>
@@ -468,9 +510,9 @@ export default function OnlineGivingPage() {
                       </div>
 
                       <div className="flex flex-col xs:flex-row gap-2 xs:gap-4 justify-between pt-4">
-                        <Button 
-                          type="button" 
-                          variant="outline" 
+                        <Button
+                          type="button"
+                          variant="outline"
                           onClick={() => setStep(1)}
                           className="w-full xs:w-auto justify-center xs:justify-start"
                         >
@@ -478,14 +520,12 @@ export default function OnlineGivingPage() {
                           <span className="truncate">Back</span>
                         </Button>
 
-                        <Button 
-                          type="submit" 
+                        <Button
+                          type="submit"
                           disabled={submitting}
                           className="w-full xs:w-auto justify-center xs:justify-end bg-green-600 hover:bg-green-700"
                         >
-                          <span className="truncate">
-                            {submitting ? 'Processing...' : 'Proceed to Payment'}
-                          </span>
+                          <span className="truncate">{submitting ? "Processing..." : "Proceed to Payment"}</span>
                           <ArrowRight className="ml-1 xs:ml-2 h-4 w-4 shrink-0" />
                         </Button>
                       </div>
@@ -516,15 +556,10 @@ export default function OnlineGivingPage() {
                       </div>
 
                       <Elements stripe={stripePromise} options={{ clientSecret }}>
-                        <PaymentForm setErrorMessage={setErrorMessage} />
+                        <PaymentForm setErrorMessage={setErrorMessage} onPaymentSuccess={handlePaymentSuccess} />
                       </Elements>
 
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={() => setStep(2)} 
-                        className="mt-4"
-                      >
+                      <Button type="button" variant="outline" onClick={() => setStep(2)} className="mt-4">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Details
                       </Button>
@@ -563,6 +598,49 @@ export default function OnlineGivingPage() {
           </div>
         </div>
       </div>
+
+      {/* Success Confirmation Dialog */}
+      {confirmationDetails && (
+        <Dialog open={!!confirmationDetails} onOpenChange={handleConfirmationClose}>
+          <DialogContent className="max-w-[95vw] rounded-lg sm:max-w-md md:max-w-lg w-full">
+            <DialogHeader>
+              <DialogTitle className="text-lg md:text-xl text-green-600">Thank You!</DialogTitle>
+              <DialogDescription className="text-sm">Your donation has been successfully processed.</DialogDescription>
+            </DialogHeader>
+
+            <div className="bg-green-50 p-3 rounded-lg border border-green-200 mb-4">
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between">
+                  <span className="font-medium">Donation type:</span>
+                  <span>{confirmationDetails.donationType}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Donor:</span>
+                  <span>{confirmationDetails.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium">Amount:</span>
+                  <span>{formatCurrency(confirmationDetails.amount)}</span>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-center text-xs text-muted-foreground mb-4">
+              A receipt has been sent to {confirmationDetails.email}
+            </p>
+
+            <DialogFooter>
+              <Button
+                onClick={handleConfirmationClose}
+                className="w-full text-sm px-4 py-2 bg-green-600 hover:bg-green-700"
+              >
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }
+

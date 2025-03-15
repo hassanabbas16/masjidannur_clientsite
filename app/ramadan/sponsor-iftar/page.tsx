@@ -1,5 +1,4 @@
   "use client"
-
   import { useState, useEffect } from "react"
   import { useRouter } from "next/navigation"
   import { zodResolver } from "@hookform/resolvers/zod"
@@ -284,60 +283,10 @@
 
     const handlePaymentSuccess = async (paymentIntentId: string) => {
       try {
-        const response = await fetch(`/api/payment-status?payment_intent=${paymentIntentId}`);
-        const data = await response.json();
-
-        if (data.status === "succeeded" && selectedDate) {
-          // Find the selected date in ramadanDates
-          const selectedDay = ramadanDates.find(
-            (day) => new Date(day.date).toDateString() === selectedDate.toDateString()
-          );
-
-          if (!selectedDay) {
-            throw new Error("Selected date not found");
-          }
-
-          // Update the database directly, similar to free iftar logic
-          await fetch(`/api/ramadan-dates/${selectedDay._id}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              available: false,
-              sponsorName: formMethods.getValues("name") || "Anonymous",
-            }),
-          });
-
-          // Update the local state
-          const updatedDates = ramadanDates.map(date => {
-            if (date._id === selectedDay._id) {
-              return {
-                ...date,
-                available: false,
-                sponsorName: formMethods.getValues("name") || "Anonymous"
-              };
-            }
-            return date;
-          });
-          setRamadanDates(updatedDates);
-
-          // Show success confirmation
-          setConfirmationDetails({
-            date: selectedDate,
-            amount: settings?.iftarCost ?? 0,
-            name: formMethods.getValues("name") || "Anonymous",
-            email: formMethods.getValues("email")
-          });
-
-          // Reset form and close dialog
-          formMethods.reset();
-          setIsDialogOpen(false);
-        } else {
-          setErrorMessage("Payment was not successful. Please try again.");
-        }
+        // Redirect to /donation-confirmation with payment_intent
+        window.location.href = `/donation-confirmation?payment_intent=${paymentIntentId}`;
       } catch (error) {
-        console.error("Error verifying payment:", error);
+        console.error("Error:", error);
         setErrorMessage("An error occurred while processing your payment.");
       }
     };
@@ -706,53 +655,6 @@
                 <Elements stripe={stripePromise} options={{ clientSecret }}>
                   <PaymentForm setErrorMessage={setErrorMessage} onPaymentSuccess={handlePaymentSuccess} />
                 </Elements>
-              </DialogContent>
-            </Dialog>
-          )}
-
-          {/* Success Confirmation */}
-          {confirmationDetails && (
-            <Dialog open={!!confirmationDetails} onOpenChange={() => setConfirmationDetails(null)}>
-              <DialogContent className="max-w-[95vw] rounded-lg sm:max-w-md md:max-w-lg w-full">
-                <DialogHeader>
-                  <DialogTitle className="text-lg md:text-xl text-green-600">Confirmed!</DialogTitle>
-                  <DialogDescription className="text-sm">
-                    Thank you for your generous sponsorship.
-                  </DialogDescription>
-                </DialogHeader>
-
-                <div className="bg-green-50 p-3 rounded-lg border border-green-200 mb-4">
-                  <div className="space-y-2 text-xs">
-                    <div className="flex justify-between">
-                      <span className="font-medium">Date:</span>
-                      <span>
-                        {confirmationDetails.date?.toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-medium">Sponsor:</span>
-                      <span>{confirmationDetails.name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="font-medium">Amount:</span>
-                      <span>${Number.parseFloat(confirmationDetails.amount.toString()).toFixed(2)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="text-center text-xs text-muted-foreground mb-4">
-                  Confirmation sent to {confirmationDetails.email}
-                </p>
-
-                <DialogFooter>
-                  <Button onClick={() => setConfirmationDetails(null)} className="w-full text-sm px-4 py-2">
-                    Close
-                  </Button>
-                </DialogFooter>
               </DialogContent>
             </Dialog>
           )}
