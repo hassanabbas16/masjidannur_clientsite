@@ -94,9 +94,9 @@ async function sendConfirmationEmail(email: string, amount: number, donationType
   const msg = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: `Confirmation of your ${donationType} Sponsorship`,
-    text: `Dear Donor,\n\nWe have received your ${donationType} sponsorship of $${amount}. Your support is greatly appreciated. The donation was made on ${date}.\n\nBest regards,\nMasjid Annoor`,
-    html: `<p>Dear Donor,</p><p>We have received your ${donationType} sponsorship of $${amount}. Your support is greatly appreciated. The donation was made on ${date}.</p><p>Best regards,<br>Masjid Annoor</p>`,
+    subject: `Confirmation of your ${donationType}`,
+    text: `Dear Donor,\n\nWe have received your ${donationType} of $${amount}. Your support is greatly appreciated. The donation was made on ${date}.\n\nBest regards,\nMasjid Annoor`,
+    html: `<p>Dear Donor,</p><p>We have received your ${donationType}  of $${amount}. Your support is greatly appreciated. The donation was made on ${date}.</p><p>Best regards,<br>Masjid Annoor</p>`,
   };
 
   try {

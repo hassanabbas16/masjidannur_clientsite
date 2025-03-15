@@ -88,7 +88,7 @@ export default function IftarTimesPage() {
             hijriFullDate: `${toOrdinal(hijriDay)} رمضان ${prayerTimesData.date.hijri.year}`,
             gregorianDate: prayerTimesData.date.gregorian.date,
             day: prayerTimesData.date.gregorian.weekday.en,
-            sehri: formattedTimes.Imsak,
+            sehri: formattedTimes.Fajr,
             iftar: formattedTimes.Maghrib,
           })
         } catch (error) {
@@ -168,7 +168,7 @@ export default function IftarTimesPage() {
                         <th className="px-4 py-3 text-left">Gregorian Date</th>
                         <th className="px-4 py-3 text-left">Hijri Date</th>
                         <th className="px-4 py-3 text-left">Day</th>
-                        <th className="px-4 py-3 text-center">Sehri (Imsak)</th>
+                        <th className="px-4 py-3 text-center">Fajr</th>
                         <th className="px-4 py-3 text-center">Iftar (Maghrib)</th>
                       </tr>
                     </thead>

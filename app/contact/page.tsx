@@ -42,7 +42,6 @@ export default function ContactPage() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     const url = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_WEB_APP_URL;
-    // Check if URL is defined
     if (!url) {
       console.error("URL is not defined");
       toast({
@@ -60,7 +59,6 @@ export default function ContactPage() {
       message: values.message,
     };
   
-    // Send data to Google Apps Script with fire-and-forget logic
     fetch(url, {
       method: 'POST',
       mode: 'no-cors',
@@ -70,7 +68,6 @@ export default function ContactPage() {
       body: JSON.stringify(data),
     })
       .then(() => {
-        // Success actions: assume the request was sent successfully
         setIsSubmitting(false);
         toast({
           title: "Message Sent",
@@ -79,7 +76,6 @@ export default function ContactPage() {
         form.reset();
       })
       .catch(error => {
-        // Handle network errors (e.g., no internet connection)
         console.error('Error:', error);
         setIsSubmitting(false);
         toast({
@@ -88,7 +84,7 @@ export default function ContactPage() {
         });
       });
   }
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <section className="relative bg-[#0D7A3B] text-white overflow-hidden">
@@ -102,7 +98,7 @@ export default function ContactPage() {
       </section>
 
       <section className="container px-4 md:px-6 py-12 md:py-24">
-        <div className="grid gap-12 md:grid-cols-2">
+        <div className="grid gap-12 md:grid-cols-2 grid-cols-1">
           {/* Contact Form */}
           <Card className="border-0 shadow-elegant">
             <CardHeader>
@@ -174,44 +170,44 @@ export default function ContactPage() {
 
           {/* Contact Information */}
           <div className="space-y-8">
-            <Card className="border-0 shadow-elegant overflow-hidden">
-              <CardHeader className="bg-primary text-primary-foreground">
-                <CardTitle>Contact Information</CardTitle>
-              </CardHeader>
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="h-5 w-5 mt-1 text-primary" />
-                    <div>
-                      <h3 className="font-medium">Address</h3>
-                      <p className="text-muted-foreground">1800 S. Albert Pike Ave, Fort Smith, AR 72903</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Phone className="h-5 w-5 mt-1 text-primary" />
-                    <div>
-                      <h3 className="font-medium">Phone</h3>
-                      <p className="text-muted-foreground">479-783-2914</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Mail className="h-5 w-5 mt-1 text-primary" />
-                    <div>
-                      <h3 className="font-medium">Email</h3>
-                      <p className="text-muted-foreground">sunnie.islamic.center@gmail.com</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Clock className="h-5 w-5 mt-1 text-primary" />
-                    <div>
-                      <h3 className="font-medium">Office Hours</h3>
-                      <p className="text-muted-foreground">Monday - Friday: 9:00 AM - 5:00 PM</p>
-                      <p className="text-muted-foreground">Saturday - Sunday: Closed</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <Card className="border-0 shadow-elegant overflow-hidden">
+    <CardHeader className="bg-primary text-primary-foreground">
+      <CardTitle>Contact Information</CardTitle>
+    </CardHeader>
+    <CardContent className="p-6">
+      <div className="space-y-4">
+        <div className="flex items-start gap-3">
+          <MapPin className="h-5 w-5 mt-1 text-primary" />
+          <div>
+            <h3 className="font-medium text-sm sm:text-base">Address</h3>
+            <p className="text-muted-foreground text-xs sm:text-sm">1800 S. Albert Pike Ave, Fort Smith, AR 72903</p>
+          </div>
+        </div>
+        <div className="flex items-start gap-3">
+          <Phone className="h-5 w-5 mt-1 text-primary" />
+          <div>
+            <h3 className="font-medium text-sm sm:text-base">Phone</h3>
+            <p className="text-muted-foreground text-xs sm:text-sm">479-783-2914</p>
+          </div>
+        </div>
+        <div className="flex items-start gap-3">
+          <Mail className="h-5 w-5 mt-1 text-primary" />
+          <div>
+            <h3 className="font-medium text-sm sm:text-base">Email</h3>
+            <p className="text-muted-foreground text-xs sm:text-sm">Sunnie.islamic.center@gmail.com</p>
+          </div>
+        </div>
+        <div className="flex items-start gap-3">
+          <Clock className="h-5 w-5 mt-1 text-primary" />
+          <div>
+            <h3 className="font-medium text-sm sm:text-base">Office Hours</h3>
+            <p className="text-muted-foreground text-xs sm:text-sm">Monday - Friday: 9:00 AM - 5:00 PM</p>
+            <p className="text-muted-foreground text-xs sm:text-sm">Saturday - Sunday: Closed</p>
+          </div>
+        </div>
+      </div>
+    </CardContent>
+  </Card>
 
             {/* Google Maps iframe with Padding */}
             <Card className="border-0 shadow-elegant overflow-hidden">
@@ -225,6 +221,7 @@ export default function ContactPage() {
                       width="100%" // Use percentage to adjust size based on the container width
                       height="500" // Set height as per your design
                       id="gmap_canvas"
+                      className="h-64 md:h-96"
                       src="https://maps.google.com/maps?q=Masjid+A1800+S.+Albert+Pike+Ave%2C+Fort+Smith%2C+AR+72903&t=&z=13&ie=UTF8&iwloc=&output=embed"
                       style={{ borderRadius: "10px" }}
                     ></iframe>

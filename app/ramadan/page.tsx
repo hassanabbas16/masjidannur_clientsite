@@ -149,7 +149,7 @@ export default function RamadanPage() {
                 {isRamadan ? (
                   <>
                     <p className="text-3xl font-bold text-primary">Day {ramadanDay}</p>
-                    <p className="text-lg">of Ramadan {moment().format("iYYYY")}</p>
+                    <p className="text-lg">of Ramadan {moment().format("YYYY")}</p>
                   </>
                 ) : (
                   <p className="text-2xl font-bold">Preparing for Ramadan</p>
@@ -237,7 +237,7 @@ export default function RamadanPage() {
                 <div className="text-center py-12 text-muted-foreground">No events found for this category.</div>
               ) : (
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredEvents.slice(0, 6).map((event) => (
+                  {filteredEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 6).map((event) => (
                     <Card key={event._id} className="border-0 shadow-elegant overflow-hidden h-full">
                       <CardHeader>
                         <div className="flex justify-between items-start">
