@@ -84,7 +84,7 @@ const AboutSchema: Schema = new Schema(
       content: { type: String, required: true },
     },
   },
-  { timestamps: true },
+  { timestamps: true, collection: 'abouts' },
 )
 
 export default mongoose.models.About || mongoose.model<IAbout>("About", AboutSchema)
