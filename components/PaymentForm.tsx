@@ -67,9 +67,8 @@ export default function PaymentForm({ setErrorMessage, onPaymentSuccess }: Payme
       setIsProcessing(false);
     }
   };
-
   return (
-    <div className="space-y-4 max-w-lg mx-auto px-4 sm:px-6 h-[90vh] overflow-auto">
+    <div className="space-y-4 max-w-lg mx-auto px-4 md:px-6 sm:max-h-[80vh] max-h-[40vh] overflow-y-auto">
       <div className="min-h-[200px]">
         <PaymentElement
           options={{ layout: isMobile ? "accordion" : "tabs" }}
@@ -109,4 +108,5 @@ export default function PaymentForm({ setErrorMessage, onPaymentSuccess }: Payme
       )}
     </div>
   );
+  
 }

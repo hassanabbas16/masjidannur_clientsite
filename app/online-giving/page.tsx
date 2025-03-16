@@ -594,7 +594,7 @@ export default function OnlineGivingPage() {
           </Card>
 
           <div className="mt-8 text-center text-sm text-slate-500">
-            <p>Need help? Contact our support team at support@example.com</p>
+            <p>Need help? Contact our support team at info@emergitechsolutions.com</p>
             <p className="mt-2">© {new Date().getFullYear()} Masjid AnNoor. All rights reserved.</p>
           </div>
         </div>
