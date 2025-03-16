@@ -55,7 +55,11 @@ export default function Error({
             <Home className="mr-2 h-4 w-4" />
             Home
           </Button>
-          <Button variant="outline" className="w-full sm:w-auto" onClick={() => window.open("/help", "_blank")}>
+          <Button
+            variant="outline"
+            className="w-full sm:w-auto"
+            onClick={() => window.open("mailto:info@emergitechsolutions.com", "_blank")}
+          >
             <HelpCircle className="mr-2 h-4 w-4" />
             Get Help
           </Button>
@@ -71,4 +75,3 @@ export default function Error({
     </div>
   )
 }
-

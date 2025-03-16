@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { usePathname } from "next/navigation"
@@ -14,8 +14,6 @@ import {
   BookOpen,
   ChevronLeft,
   ChevronRight,
-  Bot,
-  Mail,
   Menu,
   X,
   Heart,
@@ -24,6 +22,8 @@ import {
   Moon,
   BookMarked,
   LayoutDashboard,
+  ArrowLeft,
+  ArrowRight,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -35,9 +35,13 @@ export default function AdminLayout({
   const [isLoggedIn, setIsLoggedIn] = useState(true)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+  const [currentPage, setCurrentPage] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
   const [theme, setTheme] = useState<"light" | "dark">("light")
+  const touchStartX = useRef<number | null>(null)
+  const touchEndX = useRef<number | null>(null)
 
   useEffect(() => {
     // Check if user prefers dark mode
@@ -90,61 +94,121 @@ export default function AdminLayout({
     {
       label: "Dashboard",
       path: "/admin",
-      icon: Home
+      icon: Home,
     },
     {
       label: "Events",
       path: "/admin/events",
-      icon: Calendar
+      icon: Calendar,
     },
     {
       label: "Programs",
       path: "/admin/programs",
-      icon: BookOpen
+      icon: BookOpen,
     },
     {
       label: "Donations",
       path: "/admin/donations",
-      icon: Heart
+      icon: Heart,
     },
     {
       label: "Resources",
       path: "/admin/resources",
-      icon: FileText
+      icon: FileText,
     },
     {
       label: "About",
       path: "/admin/about",
-      icon: Info
+      icon: Info,
     },
     {
-      label: "Ramadan Management",
+      label: "Ramadan", // Shortened from "Ramadan Management"
       path: "/admin/ramadan-management",
-      icon: Moon
+      icon: Moon,
     },
     {
-      label: "Ramadan Events",
+      label: "R. Events", // Shortened from "Ramadan Events"
       path: "/admin/ramadan/events",
-      icon: Users
+      icon: Users,
     },
     {
-      label: "Ramadan Resources",
+      label: "R. Resources", // Shortened from "Ramadan Resources"
       path: "/admin/ramadan/resources",
-      icon: BookMarked
+      icon: BookMarked,
     },
     {
-      label: "Site Settings",
+      label: "Settings", // Shortened from "Site Settings"
       path: "/admin/site-settings",
-      icon: Settings
+      icon: Settings,
     },
     {
-      label: "Home Settings",
+      label: "Home", // Shortened from "Home Settings"
       path: "/admin/home-page",
-      icon: LayoutDashboard
-    }
+      icon: LayoutDashboard,
+    },
   ]
 
-  const sidebarBgColor ="bg-[#0D7A3B]"
+  // Calculate how many pages of menu items we have (5 items per page)
+  const totalPages = Math.ceil(menuItems.length / 5)
+
+  // Get the current page of menu items
+  const currentMenuItems = menuItems.slice(currentPage * 5, (currentPage + 1) * 5)
+
+  // Handle swipe navigation
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX
+  }
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current || isTransitioning) return
+
+    const diffX = touchStartX.current - touchEndX.current
+
+    // If the swipe is significant enough (more than 50px)
+    if (Math.abs(diffX) > 50) {
+      if (diffX > 0 && currentPage < totalPages - 1) {
+        // Swipe left - go to next page
+        changePage(currentPage + 1)
+      } else if (diffX < 0 && currentPage > 0) {
+        // Swipe right - go to previous page
+        changePage(currentPage - 1)
+      }
+    }
+
+    // Reset touch coordinates
+    touchStartX.current = null
+    touchEndX.current = null
+  }
+
+  const changePage = (newPage: number) => {
+    if (isTransitioning || newPage < 0 || newPage >= totalPages) return
+
+    setIsTransitioning(true)
+    setCurrentPage(newPage)
+
+    // Reset transitioning state after animation completes
+    setTimeout(() => {
+      setIsTransitioning(false)
+    }, 300) // Match this with your CSS transition duration
+  }
+
+  const nextPage = () => {
+    if (currentPage < totalPages - 1) {
+      changePage(currentPage + 1)
+    }
+  }
+
+  const prevPage = () => {
+    if (currentPage > 0) {
+      changePage(currentPage - 1)
+    }
+  }
+
+  const sidebarBgColor = "bg-[#0D7A3B]"
   const sidebarTextColor = "text-white"
   const sidebarHoverColor = "hover:bg-[#0B6A34]"
   const sidebarActiveColor = "bg-[#0B6A34]"
@@ -197,22 +261,6 @@ export default function AdminLayout({
         </div>
 
         <nav className="mt-6 h-[calc(100vh-120px)] overflow-y-auto scrollbar-thin">
-          <style jsx global>{`
-            .scrollbar-thin::-webkit-scrollbar {
-              width: 4px;
-            }
-            .scrollbar-thin::-webkit-scrollbar-track {
-              background: rgba(255, 255, 255, 0.1);
-            }
-            .scrollbar-thin::-webkit-scrollbar-thumb {
-              background: rgba(255, 255, 255, 0.2);
-              border-radius: 2px;
-            }
-            .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-              background: rgba(255, 255, 255, 0.3);
-            }
-          `}</style>
-
           <ul className="space-y-2">
             {menuItems.map((item, index) => {
               const isItemActive =
@@ -260,8 +308,9 @@ export default function AdminLayout({
               >
                 <LogOut className="w-6 h-6" />
                 <span
-                  className={cn("ml-2 transition-opacity duration-200", 
-                    isCollapsed ? "opacity-0 hidden" : "opacity-100"
+                  className={cn(
+                    "ml-2 transition-opacity duration-200",
+                    isCollapsed ? "opacity-0 hidden" : "opacity-100",
                   )}
                 >
                   Logout
@@ -286,15 +335,18 @@ export default function AdminLayout({
         )}
       >
         <div className="flex flex-col h-full">
-          <div className={cn("p-4 flex items-center justify-between border-b", sidebarBorderColor)}>
-            <h2 className="font-bold text-xl text-white">Admin Panel</h2>
-            <button onClick={() => setIsMobileNavOpen(false)} className="p-2 rounded-full text-white hover:bg-[#0B6A34">
+          <div className={cn("p-3 flex items-center justify-between border-b", sidebarBorderColor)}>
+            <h2 className="font-bold text-lg text-white">Admin Panel</h2>
+            <button
+              onClick={() => setIsMobileNavOpen(false)}
+              className="p-2 rounded-full text-white hover:bg-[#0B6A34]"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <nav className="flex-1 overflow-y-auto py-4">
-            <ul className="space-y-2 px-2">
+          <nav className="flex-1 overflow-y-auto py-2 scrollbar-thin">
+            <ul className="space-y-1 px-2">
               {menuItems.map((item, index) => {
                 const isItemActive =
                   isActive(item.path) &&
@@ -306,13 +358,13 @@ export default function AdminLayout({
                       href={item.path}
                       onClick={() => setIsMobileNavOpen(false)}
                       className={cn(
-                        "flex items-center p-3 rounded-md transition-all duration-200",
+                        "flex items-center p-2 rounded-md transition-all duration-200",
                         isItemActive ? sidebarActiveColor : "",
                         sidebarHoverColor,
                       )}
                     >
-                      <item.icon className="w-5 h-5 mr-3" />
-                      <span>{item.label}</span>
+                      <item.icon className="w-4 h-4 mr-2" />
+                      <span className="text-sm">{item.label}</span>
                     </Link>
                   </li>
                 )
@@ -320,16 +372,16 @@ export default function AdminLayout({
             </ul>
           </nav>
 
-          <div className={cn("p-4 border-t", sidebarBorderColor)}>
+          <div className={cn("p-3 border-t", sidebarBorderColor)}>
             <button
               onClick={() => {
                 setIsMobileNavOpen(false)
                 handleLogout()
               }}
-              className={cn("flex items-center w-full p-3 rounded-md", sidebarHoverColor)}
+              className={cn("flex items-center w-full p-2 rounded-md", sidebarHoverColor)}
             >
-              <LogOut className="w-5 h-5 mr-3" />
-              <span>Logout</span>
+              <LogOut className="w-4 h-4 mr-2" />
+              <span className="text-sm">Logout</span>
             </button>
           </div>
         </div>
@@ -398,40 +450,95 @@ export default function AdminLayout({
         </div>
       </header>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Mobile Bottom Navigation with Swipe */}
       <div
         className={cn(
           "fixed bottom-0 left-0 right-0 z-30 lg:hidden border-t",
           theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200",
         )}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
-        <div className="grid grid-cols-5 h-16">
-          {menuItems.slice(0, 5).map((item, index) => {
-            const isItemActive =
-              isActive(item.path) &&
-              (item.path === "/admin" ? !isActive("/admin/events") && !isActive("/admin/programs") : true)
-
-            return (
-              <Link
-                key={index}
-                href={item.path}
+        {/* Navigation dots */}
+        <div
+          className="flex items-center justify-between px-2 h-5 bg-opacity-90"
+          style={{ backgroundColor: theme === "dark" ? "rgba(31, 41, 55, 0.9)" : "rgba(243, 244, 246, 0.9)" }}
+        >
+          <button
+            onClick={prevPage}
+            disabled={currentPage === 0 || isTransitioning}
+            className={cn(
+              "p-0.5 rounded-full",
+              currentPage === 0 || isTransitioning ? "opacity-30" : "opacity-100",
+              theme === "dark" ? "text-gray-300" : "text-gray-600",
+            )}
+          >
+            <ArrowLeft className="w-3 h-3" />
+          </button>
+          <div className="flex space-x-1">
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <div
+                key={i}
                 className={cn(
-                  "flex flex-col items-center justify-center",
-                  isItemActive
+                  "w-1 h-1 rounded-full",
+                  currentPage === i
                     ? theme === "dark"
-                      ? "text-blue-400"
-                      : "text-blue-600"
+                      ? "bg-blue-400"
+                      : "bg-blue-600"
                     : theme === "dark"
-                      ? "text-gray-400"
-                      : "text-gray-600",
-                  "hover:bg-opacity-10 hover:bg-gray-500",
+                      ? "bg-gray-600"
+                      : "bg-gray-300",
                 )}
-              >
-                <item.icon className="w-5 h-5" />
-                <span className="text-xs mt-1">{item.label}</span>
-              </Link>
-            )
-          })}
+              />
+            ))}
+          </div>
+          <button
+            onClick={nextPage}
+            disabled={currentPage === totalPages - 1 || isTransitioning}
+            className={cn(
+              "p-0.5 rounded-full",
+              currentPage === totalPages - 1 || isTransitioning ? "opacity-30" : "opacity-100",
+              theme === "dark" ? "text-gray-300" : "text-gray-600",
+            )}
+          >
+            <ArrowRight className="w-3 h-3" />
+          </button>
+        </div>
+
+        {/* Navigation items */}
+        <div className="relative h-14 overflow-hidden">
+          <div
+            className={cn(
+              "grid grid-cols-5 h-14 w-full absolute transition-transform duration-300 ease-in-out",
+              isTransitioning ? "opacity-0" : "opacity-100",
+            )}
+            style={{ transform: `translateX(0)` }}
+          >
+            {currentMenuItems.map((item, index) => {
+              const isItemActive = isActive(item.path)
+              return (
+                <Link
+                  key={`${currentPage}-${index}`}
+                  href={item.path}
+                  className={cn(
+                    "flex flex-col items-center justify-center px-0.5 py-1",
+                    isItemActive
+                      ? theme === "dark"
+                        ? "text-blue-400"
+                        : "text-blue-600"
+                      : theme === "dark"
+                        ? "text-gray-400"
+                        : "text-gray-600",
+                    "hover:bg-opacity-10 hover:bg-gray-500",
+                  )}
+                >
+                  <item.icon className="w-4 h-4 mb-0.5" />
+                  <span className="text-[9px] leading-[1.1] text-center w-full line-clamp-1">{item.label}</span>
+                </Link>
+              )
+            })}
+          </div>
         </div>
       </div>
 
@@ -441,7 +548,7 @@ export default function AdminLayout({
           "transition-all duration-300 min-h-screen",
           "lg:ml-64", // Default for desktop expanded
           isCollapsed ? "lg:ml-20" : "", // Adjust for desktop collapsed
-          "pb-16 lg:pb-0", // Add padding for mobile bottom nav
+          "pb-20 lg:pb-0", // Add padding for mobile bottom nav
         )}
       >
         <div className="min-h-screen flex flex-col">

@@ -12,9 +12,27 @@ import { Switch } from "@/components/ui/switch"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
-import { Save, Plus, Trash2, Edit, Check, X, GripVertical, Facebook, Instagram, Twitter, Youtube, Linkedin, Mail, Phone, MapPin, ImageIcon, LinkIcon, MenuIcon, ExternalLink } from 'lucide-react'
-import { v4 as uuidv4 } from 'uuid'
+import {
+  Save,
+  Plus,
+  Trash2,
+  Edit,
+  Check,
+  X,
+  GripVertical,
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+  Linkedin,
+  Mail,
+  LinkIcon,
+  ExternalLink,
+  ArrowLeft,
+} from "lucide-react"
+import { v4 as uuidv4 } from "uuid"
 import { ImageUpload } from "@/components/ui/image-upload"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface SiteSettings {
   _id?: string
@@ -36,7 +54,7 @@ interface SiteSettings {
       order: number
     }[]
   }[]
-  
+
   // Footer Settings
   footerLogo: string
   footerTagline: string
@@ -64,7 +82,7 @@ interface SiteSettings {
     url: string
     enabled: boolean
   }
-  
+
   // General
   isActive: boolean
 }
@@ -75,37 +93,37 @@ export default function SiteSettingsPage() {
   const [settings, setSettings] = useState<SiteSettings | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  
+
   // Header editing states
   const [editingMenuItem, setEditingMenuItem] = useState<string | null>(null)
-  const [editingSubmenuItem, setEditingSubmenuItem] = useState<{menuId: string, itemId: string} | null>(null)
+  const [editingSubmenuItem, setEditingSubmenuItem] = useState<{ menuId: string; itemId: string } | null>(null)
   const [menuItemForm, setMenuItemForm] = useState({
     id: "",
     name: "",
     href: "",
     enabled: true,
-    dropdown: false
+    dropdown: false,
   })
   const [submenuItemForm, setSubmenuItemForm] = useState({
     id: "",
     name: "",
-    href: ""
+    href: "",
   })
-  
+
   // Footer editing states
   const [editingSocialLink, setEditingSocialLink] = useState<string | null>(null)
   const [socialLinkForm, setLinkForm] = useState({
     platform: "",
     url: "",
     icon: "",
-    enabled: true
+    enabled: true,
   })
   const [editingQuickLink, setEditingQuickLink] = useState<string | null>(null)
   const [quickLinkForm, setQuickLinkForm] = useState({
     id: "",
     name: "",
     href: "",
-    enabled: true
+    enabled: true,
   })
 
   useEffect(() => {
@@ -127,10 +145,10 @@ export default function SiteSettingsPage() {
 
   const handleSaveSettings = async () => {
     if (!settings) return
-    
+
     try {
       setSaving(true)
-      
+
       const response = await fetch("/api/site-settings", {
         method: "PUT",
         headers: {
@@ -138,7 +156,7 @@ export default function SiteSettingsPage() {
         },
         body: JSON.stringify(settings),
       })
-      
+
       if (response.ok) {
         alert("Settings saved successfully!")
       } else {
@@ -155,7 +173,7 @@ export default function SiteSettingsPage() {
   // Header menu item functions
   const handleAddMenuItem = () => {
     if (!settings) return
-    
+
     const newItem = {
       id: uuidv4(),
       name: "New Item",
@@ -163,21 +181,21 @@ export default function SiteSettingsPage() {
       enabled: true,
       dropdown: false,
       order: settings.headerMenuItems.length,
-      items: []
+      items: [],
     }
-    
+
     setSettings({
       ...settings,
-      headerMenuItems: [...settings.headerMenuItems, newItem]
+      headerMenuItems: [...settings.headerMenuItems, newItem],
     })
-    
+
     // Start editing the new item
     setMenuItemForm({
       id: newItem.id,
       name: newItem.name,
       href: newItem.href,
       enabled: newItem.enabled,
-      dropdown: newItem.dropdown
+      dropdown: newItem.dropdown,
     })
     setEditingMenuItem(newItem.id)
   }
@@ -188,102 +206,104 @@ export default function SiteSettingsPage() {
       name: item.name,
       href: item.href,
       enabled: item.enabled,
-      dropdown: item.dropdown
+      dropdown: item.dropdown,
     })
     setEditingMenuItem(item.id)
   }
 
   const handleSaveMenuItem = () => {
     if (!settings) return
-    
-    const updatedItems = settings.headerMenuItems.map(item => 
-      item.id === menuItemForm.id ? {
-        ...item,
-        name: menuItemForm.name,
-        href: menuItemForm.href,
-        enabled: menuItemForm.enabled,
-        dropdown: menuItemForm.dropdown,
-        // If dropdown was turned off, keep the items array but they won't be displayed
-      } : item
+
+    const updatedItems = settings.headerMenuItems.map((item) =>
+      item.id === menuItemForm.id
+        ? {
+            ...item,
+            name: menuItemForm.name,
+            href: menuItemForm.href,
+            enabled: menuItemForm.enabled,
+            dropdown: menuItemForm.dropdown,
+            // If dropdown was turned off, keep the items array but they won't be displayed
+          }
+        : item,
     )
-    
+
     setSettings({
       ...settings,
-      headerMenuItems: updatedItems
+      headerMenuItems: updatedItems,
     })
-    
+
     setEditingMenuItem(null)
   }
 
   const handleDeleteMenuItem = (id: string) => {
     if (!settings) return
-    
-    const updatedItems = settings.headerMenuItems.filter(item => item.id !== id)
-    
+
+    const updatedItems = settings.headerMenuItems.filter((item) => item.id !== id)
+
     // Reorder remaining items
     const reorderedItems = updatedItems.map((item, index) => ({
       ...item,
-      order: index
+      order: index,
     }))
-    
+
     setSettings({
       ...settings,
-      headerMenuItems: reorderedItems
+      headerMenuItems: reorderedItems,
     })
   }
 
   const handleReorderMenuItems = (result: any) => {
     if (!result.destination || !settings) return
-    
+
     const items = Array.from(settings.headerMenuItems)
     const [reorderedItem] = items.splice(result.source.index, 1)
     items.splice(result.destination.index, 0, reorderedItem)
-    
+
     // Update order property
     const updatedItems = items.map((item, index) => ({
       ...item,
-      order: index
+      order: index,
     }))
-    
+
     setSettings({
       ...settings,
-      headerMenuItems: updatedItems
+      headerMenuItems: updatedItems,
     })
   }
 
   // Submenu item functions
   const handleAddSubmenuItem = (menuId: string) => {
     if (!settings) return
-    
+
     const newItem = {
       id: uuidv4(),
       name: "New Submenu Item",
       href: "#",
-      order: 0
+      order: 0,
     }
-    
-    const updatedItems = settings.headerMenuItems.map(item => {
+
+    const updatedItems = settings.headerMenuItems.map((item) => {
       if (item.id === menuId) {
         const items = item.items || []
         newItem.order = items.length
         return {
           ...item,
-          items: [...items, newItem]
+          items: [...items, newItem],
         }
       }
       return item
     })
-    
+
     setSettings({
       ...settings,
-      headerMenuItems: updatedItems
+      headerMenuItems: updatedItems,
     })
-    
+
     // Start editing the new item
     setSubmenuItemForm({
       id: newItem.id,
       name: newItem.name,
-      href: newItem.href
+      href: newItem.href,
     })
     setEditingSubmenuItem({ menuId, itemId: newItem.id })
   }
@@ -292,110 +312,112 @@ export default function SiteSettingsPage() {
     setSubmenuItemForm({
       id: item.id,
       name: item.name,
-      href: item.href
+      href: item.href,
     })
     setEditingSubmenuItem({ menuId, itemId: item.id })
   }
 
   const handleSaveSubmenuItem = () => {
     if (!settings || !editingSubmenuItem) return
-    
+
     const { menuId, itemId } = editingSubmenuItem
-    
-    const updatedItems = settings.headerMenuItems.map(item => {
+
+    const updatedItems = settings.headerMenuItems.map((item) => {
       if (item.id === menuId && item.items) {
         return {
           ...item,
-          items: item.items.map(subItem => 
-            subItem.id === itemId ? {
-              ...subItem,
-              name: submenuItemForm.name,
-              href: submenuItemForm.href
-            } : subItem
-          )
+          items: item.items.map((subItem) =>
+            subItem.id === itemId
+              ? {
+                  ...subItem,
+                  name: submenuItemForm.name,
+                  href: submenuItemForm.href,
+                }
+              : subItem,
+          ),
         }
       }
       return item
     })
-    
+
     setSettings({
       ...settings,
-      headerMenuItems: updatedItems
+      headerMenuItems: updatedItems,
     })
-    
+
     setEditingSubmenuItem(null)
   }
 
   const handleDeleteSubmenuItem = (menuId: string, itemId: string) => {
     if (!settings) return
-    
-    const updatedItems = settings.headerMenuItems.map(item => {
+
+    const updatedItems = settings.headerMenuItems.map((item) => {
       if (item.id === menuId && item.items) {
         return {
           ...item,
-          items: item.items.filter(subItem => subItem.id !== itemId)
+          items: item.items.filter((subItem) => subItem.id !== itemId),
         }
       }
       return item
     })
-    
+
     setSettings({
       ...settings,
-      headerMenuItems: updatedItems
+      headerMenuItems: updatedItems,
     })
   }
 
   const handleReorderSubmenuItems = (menuId: string, result: any) => {
     if (!result.destination || !settings) return
-    
-    const updatedItems = settings.headerMenuItems.map(item => {
+
+    const updatedItems = settings.headerMenuItems.map((item) => {
       if (item.id === menuId && item.items) {
         const subItems = Array.from(item.items)
         const [reorderedItem] = subItems.splice(result.source.index, 1)
         subItems.splice(result.destination.index, 0, reorderedItem)
-        
+
         // Update order property
         const updatedSubItems = subItems.map((subItem, index) => ({
           ...subItem,
-          order: index
+          order: index,
         }))
-        
+
         return {
           ...item,
-          items: updatedSubItems
+          items: updatedSubItems,
         }
       }
       return item
     })
-    
+
     setSettings({
       ...settings,
-      headerMenuItems: updatedItems
+      headerMenuItems: updatedItems,
     })
   }
 
   // Footer functions
   const handleAddSocialLink = () => {
     if (!settings) return
-    
+
     const newLink = {
       platform: "New Platform",
       url: "#",
       icon: "Link",
-      enabled: true
+      enabled: true,
     }
-    
+
     setSettings({
       ...settings,
-      socialLinks: [...settings.socialLinks, newLink]
+      socialLinks: [...settings.socialLinks, newLink],
     })
-    
+
     // Start editing the new link
     setLinkForm({
       platform: newLink.platform,
       url: newLink.url,
       icon: newLink.icon,
-      enabled: newLink.enabled
+      enabled: newLink.enabled,
     })
     setEditingSocialLink(newLink.platform)
   }
@@ -405,73 +427,73 @@ export default function SiteSettingsPage() {
       platform: link.platform,
       url: link.url,
       icon: link.icon,
-      enabled: link.enabled
+      enabled: link.enabled,
     })
     setEditingSocialLink(link.platform)
   }
 
   const handleSaveSocialLink = () => {
     if (!settings || !editingSocialLink) return
-    
-    const updatedLinks = settings.socialLinks.map(link => 
-      link.platform === editingSocialLink ? socialLinkForm : link
+
+    const updatedLinks = settings.socialLinks.map((link) =>
+      link.platform === editingSocialLink ? socialLinkForm : link,
     )
-    
+
     setSettings({
       ...settings,
-      socialLinks: updatedLinks
+      socialLinks: updatedLinks,
     })
-    
+
     setEditingSocialLink(null)
   }
 
   const handleDeleteSocialLink = (platform: string) => {
     if (!settings) return
-    
-    const updatedLinks = settings.socialLinks.filter(link => link.platform !== platform)
-    
+
+    const updatedLinks = settings.socialLinks.filter((link) => link.platform !== platform)
+
     setSettings({
       ...settings,
-      socialLinks: updatedLinks
+      socialLinks: updatedLinks,
     })
   }
 
   const handleToggleSocialLink = (platform: string) => {
     if (!settings) return
-    
-    const updatedLinks = settings.socialLinks.map(link => 
-      link.platform === platform ? { ...link, enabled: !link.enabled } : link
+
+    const updatedLinks = settings.socialLinks.map((link) =>
+      link.platform === platform ? { ...link, enabled: !link.enabled } : link,
     )
-    
+
     setSettings({
       ...settings,
-      socialLinks: updatedLinks
+      socialLinks: updatedLinks,
     })
   }
 
   // Quick links functions
   const handleAddQuickLink = () => {
     if (!settings) return
-    
+
     const newLink = {
       id: uuidv4(),
       name: "New Link",
       href: "#",
       enabled: true,
-      order: settings.quickLinks.length
+      order: settings.quickLinks.length,
     }
-    
+
     setSettings({
       ...settings,
-      quickLinks: [...settings.quickLinks, newLink]
+      quickLinks: [...settings.quickLinks, newLink],
     })
-    
+
     // Start editing the new link
     setQuickLinkForm({
       id: newLink.id,
       name: newLink.name,
       href: newLink.href,
-      enabled: newLink.enabled
+      enabled: newLink.enabled,
     })
     setEditingQuickLink(newLink.id)
   }
@@ -481,85 +503,94 @@ export default function SiteSettingsPage() {
       id: link.id,
       name: link.name,
       href: link.href,
-      enabled: link.enabled
+      enabled: link.enabled,
     })
     setEditingQuickLink(link.id)
   }
 
   const handleSaveQuickLink = () => {
     if (!settings || !editingQuickLink) return
-    
-    const updatedLinks = settings.quickLinks.map(link => 
-      link.id === editingQuickLink ? {
-        ...link,
-        name: quickLinkForm.name,
-        href: quickLinkForm.href,
-        enabled: quickLinkForm.enabled
-      } : link
+
+    const updatedLinks = settings.quickLinks.map((link) =>
+      link.id === editingQuickLink
+        ? {
+            ...link,
+            name: quickLinkForm.name,
+            href: quickLinkForm.href,
+            enabled: quickLinkForm.enabled,
+          }
+        : link,
     )
-    
+
     setSettings({
       ...settings,
-      quickLinks: updatedLinks
+      quickLinks: updatedLinks,
     })
-    
+
     setEditingQuickLink(null)
   }
 
   const handleDeleteQuickLink = (id: string) => {
     if (!settings) return
-    
-    const updatedLinks = settings.quickLinks.filter(link => link.id !== id)
-    
+
+    const updatedLinks = settings.quickLinks.filter((link) => link.id !== id)
+
     // Reorder remaining links
     const reorderedLinks = updatedLinks.map((link, index) => ({
       ...link,
-      order: index
+      order: index,
     }))
-    
+
     setSettings({
       ...settings,
-      quickLinks: reorderedLinks
+      quickLinks: reorderedLinks,
     })
   }
 
   const handleReorderQuickLinks = (result: any) => {
     if (!result.destination || !settings) return
-    
+
     const links = Array.from(settings.quickLinks)
     const [reorderedLink] = links.splice(result.source.index, 1)
     links.splice(result.destination.index, 0, reorderedLink)
-    
+
     // Update order property
     const updatedLinks = links.map((link, index) => ({
       ...link,
-      order: index
+      order: index,
     }))
-    
+
     setSettings({
       ...settings,
-      quickLinks: updatedLinks
+      quickLinks: updatedLinks,
     })
   }
 
   const getSocialIcon = (iconName: string) => {
     switch (iconName) {
-      case "Facebook": return <Facebook className="h-5 w-5" />
-      case "Instagram": return <Instagram className="h-5 w-5" />
-      case "Twitter": return <Twitter className="h-5 w-5" />
-      case "Youtube": return <Youtube className="h-5 w-5" />
-      case "Linkedin": return <Linkedin className="h-5 w-5" />
-      case "Mail": return <Mail className="h-5 w-5" />
-      default: return <LinkIcon className="h-5 w-5" />
+      case "Facebook":
+        return <Facebook className="h-5 w-5" />
+      case "Instagram":
+        return <Instagram className="h-5 w-5" />
+      case "Twitter":
+        return <Twitter className="h-5 w-5" />
+      case "Youtube":
+        return <Youtube className="h-5 w-5" />
+      case "Linkedin":
+        return <Linkedin className="h-5 w-5" />
+      case "Mail":
+        return <Mail className="h-5 w-5" />
+      default:
+        return <LinkIcon className="h-5 w-5" />
     }
   }
 
   const handleSettingsChange = (field: string, value: string) => {
     if (!settings) return
-    
+
     setSettings({
       ...settings,
-      [field]: value
+      [field]: value,
     })
   }
 
@@ -584,10 +615,14 @@ export default function SiteSettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-2 sm:px-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-bold">Site Settings</h1>
-        <Button onClick={handleSaveSettings} disabled={saving}>
+      <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto mb-4">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        <h1 className="text-3xl font-bold text-center sm:text-left">Site Settings</h1>
+        <Button onClick={handleSaveSettings} disabled={saving} className="w-full sm:w-auto">
           {saving ? (
             <>
               <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
@@ -602,12 +637,12 @@ export default function SiteSettingsPage() {
         </Button>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-2">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="header">Header</TabsTrigger>
           <TabsTrigger value="footer">Footer</TabsTrigger>
         </TabsList>
-        
+
         {/* Header Tab */}
         <TabsContent value="header" className="space-y-6 mt-6">
           <Card>
@@ -626,7 +661,7 @@ export default function SiteSettingsPage() {
                     disabled={saving}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="site-name">Site Name</Label>
                   <Input
@@ -635,7 +670,7 @@ export default function SiteSettingsPage() {
                     onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="site-location">Site Location</Label>
                   <Input
@@ -645,24 +680,20 @@ export default function SiteSettingsPage() {
                   />
                 </div>
               </div>
-              
+
               <div className="space-y-4 pt-4 border-t">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h3 className="text-lg font-medium">Navigation Menu</h3>
                   <Button onClick={handleAddMenuItem} size="sm">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Menu Item
                   </Button>
                 </div>
-                
+
                 <DragDropContext onDragEnd={handleReorderMenuItems}>
                   <Droppable droppableId="menu-items">
                     {(provided) => (
-                      <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        className="space-y-4"
-                      >
+                      <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-4">
                         {settings.headerMenuItems.length === 0 ? (
                           <p className="text-center py-4 text-muted-foreground">No menu items added yet</p>
                         ) : (
@@ -674,20 +705,22 @@ export default function SiteSettingsPage() {
                                   {...provided.draggableProps}
                                   className="border rounded-md p-4 bg-background"
                                 >
-                                  <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center">
-                                      <div {...provided.dragHandleProps} className="mr-2 cursor-grab">
+                                  <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                                    <div className="flex items-center flex-1 min-w-0">
+                                      <div {...provided.dragHandleProps} className="mr-2 cursor-grab flex-shrink-0">
                                         <GripVertical className="h-5 w-5 text-muted-foreground" />
                                       </div>
                                       {editingMenuItem === item.id ? (
-                                        <div className="flex-1 space-y-3">
-                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div className="flex-1 space-y-3 w-full">
+                                          <div className="grid grid-cols-1 gap-3">
                                             <div>
                                               <Label htmlFor={`menu-name-${item.id}`}>Name</Label>
                                               <Input
                                                 id={`menu-name-${item.id}`}
                                                 value={menuItemForm.name}
-                                                onChange={(e) => setMenuItemForm({ ...menuItemForm, name: e.target.value })}
+                                                onChange={(e) =>
+                                                  setMenuItemForm({ ...menuItemForm, name: e.target.value })
+                                                }
                                               />
                                             </div>
                                             <div>
@@ -695,16 +728,20 @@ export default function SiteSettingsPage() {
                                               <Input
                                                 id={`menu-href-${item.id}`}
                                                 value={menuItemForm.href}
-                                                onChange={(e) => setMenuItemForm({ ...menuItemForm, href: e.target.value })}
+                                                onChange={(e) =>
+                                                  setMenuItemForm({ ...menuItemForm, href: e.target.value })
+                                                }
                                               />
                                             </div>
                                           </div>
-                                          <div className="flex items-center gap-4">
+                                          <div className="flex items-center gap-4 flex-wrap">
                                             <div className="flex items-center space-x-2">
                                               <Switch
                                                 id={`menu-enabled-${item.id}`}
                                                 checked={menuItemForm.enabled}
-                                                onCheckedChange={(checked) => setMenuItemForm({ ...menuItemForm, enabled: checked })}
+                                                onCheckedChange={(checked) =>
+                                                  setMenuItemForm({ ...menuItemForm, enabled: checked })
+                                                }
                                               />
                                               <Label htmlFor={`menu-enabled-${item.id}`}>Enabled</Label>
                                             </div>
@@ -712,28 +749,30 @@ export default function SiteSettingsPage() {
                                               <Switch
                                                 id={`menu-dropdown-${item.id}`}
                                                 checked={menuItemForm.dropdown}
-                                                onCheckedChange={(checked) => setMenuItemForm({ ...menuItemForm, dropdown: checked })}
+                                                onCheckedChange={(checked) =>
+                                                  setMenuItemForm({ ...menuItemForm, dropdown: checked })
+                                                }
                                               />
                                               <Label htmlFor={`menu-dropdown-${item.id}`}>Has Dropdown</Label>
                                             </div>
                                           </div>
                                         </div>
                                       ) : (
-                                        <div className="flex-1">
-                                          <div className="flex items-center">
-                                            <h4 className="font-medium">{item.name}</h4>
+                                        <div className="flex-1 min-w-0">
+                                          <div className="flex items-center flex-wrap gap-1">
+                                            <h4 className="font-medium truncate">{item.name}</h4>
                                             {!item.enabled && (
-                                              <span className="ml-2 text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded">
+                                              <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded">
                                                 Hidden
                                               </span>
                                             )}
                                             {item.dropdown && (
-                                              <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+                                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
                                                 Dropdown
                                               </span>
                                             )}
                                           </div>
-                                          <p className="text-sm text-muted-foreground">{item.href}</p>
+                                          <p className="text-sm text-muted-foreground truncate">{item.href}</p>
                                         </div>
                                       )}
                                     </div>
@@ -752,30 +791,36 @@ export default function SiteSettingsPage() {
                                           <Button variant="outline" size="sm" onClick={() => handleEditMenuItem(item)}>
                                             <Edit className="h-4 w-4" />
                                           </Button>
-                                          <Button variant="outline" size="sm" onClick={() => handleDeleteMenuItem(item.id)}>
+                                          <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleDeleteMenuItem(item.id)}
+                                          >
                                             <Trash2 className="h-4 w-4" />
                                           </Button>
                                         </>
                                       )}
                                     </div>
                                   </div>
-                                  
+
                                   {/* Submenu Items */}
                                   {item.dropdown && (
-                                    <div className="mt-4 pl-8 border-t pt-4">
-                                      <div className="flex items-center justify-between mb-3">
+                                    <div className="mt-4 pl-4 sm:pl-8 border-t pt-4">
+                                      <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                                         <h5 className="text-sm font-medium">Dropdown Items</h5>
-                                        <Button 
-                                          variant="outline" 
-                                          size="sm" 
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
                                           onClick={() => handleAddSubmenuItem(item.id)}
                                         >
                                           <Plus className="h-3 w-3 mr-1" />
                                           Add Item
                                         </Button>
                                       </div>
-                                      
-                                      <DragDropContext onDragEnd={(result) => handleReorderSubmenuItems(item.id, result)}>
+
+                                      <DragDropContext
+                                        onDragEnd={(result) => handleReorderSubmenuItems(item.id, result)}
+                                      >
                                         <Droppable droppableId={`submenu-${item.id}`}>
                                           {(provided) => (
                                             <div
@@ -784,7 +829,9 @@ export default function SiteSettingsPage() {
                                               className="space-y-2"
                                             >
                                               {!item.items || item.items.length === 0 ? (
-                                                <p className="text-sm text-muted-foreground">No dropdown items added yet</p>
+                                                <p className="text-sm text-muted-foreground">
+                                                  No dropdown items added yet
+                                                </p>
                                               ) : (
                                                 item.items.map((subItem, subIndex) => (
                                                   <Draggable key={subItem.id} draggableId={subItem.id} index={subIndex}>
@@ -792,54 +839,83 @@ export default function SiteSettingsPage() {
                                                       <div
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
-                                                        className="flex items-center justify-between p-2 border rounded-md bg-muted/40"
+                                                        className="flex items-center justify-between p-2 border rounded-md bg-muted/40 flex-wrap gap-2"
                                                       >
-                                                        {editingSubmenuItem && 
-                                                         editingSubmenuItem.menuId === item.id && 
-                                                         editingSubmenuItem.itemId === subItem.id ? (
-                                                          <div className="flex-1 flex gap-2">
+                                                        {editingSubmenuItem &&
+                                                        editingSubmenuItem.menuId === item.id &&
+                                                        editingSubmenuItem.itemId === subItem.id ? (
+                                                          <div className="flex-1 flex flex-col sm:flex-row gap-2 w-full">
                                                             <Input
                                                               value={submenuItemForm.name}
-                                                              onChange={(e) => setSubmenuItemForm({ ...submenuItemForm, name: e.target.value })}
+                                                              onChange={(e) =>
+                                                                setSubmenuItemForm({
+                                                                  ...submenuItemForm,
+                                                                  name: e.target.value,
+                                                                })
+                                                              }
                                                               placeholder="Name"
-                                                              className="h-8 text-sm"
+                                                              className="h-8 text-sm flex-1"
                                                             />
                                                             <Input
                                                               value={submenuItemForm.href}
-                                                              onChange={(e) => setSubmenuItemForm({ ...submenuItemForm, href: e.target.value })}
+                                                              onChange={(e) =>
+                                                                setSubmenuItemForm({
+                                                                  ...submenuItemForm,
+                                                                  href: e.target.value,
+                                                                })
+                                                              }
                                                               placeholder="Link"
-                                                              className="h-8 text-sm"
+                                                              className="h-8 text-sm flex-1"
                                                             />
-                                                            <Button variant="outline" size="sm" onClick={handleSaveSubmenuItem}>
-                                                              <Check className="h-3 w-3" />
-                                                            </Button>
-                                                            <Button variant="outline" size="sm" onClick={() => setEditingSubmenuItem(null)}>
-                                                              <X className="h-3 w-3" />
-                                                            </Button>
+                                                            <div className="flex gap-2">
+                                                              <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={handleSaveSubmenuItem}
+                                                              >
+                                                                <Check className="h-3 w-3" />
+                                                              </Button>
+                                                              <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => setEditingSubmenuItem(null)}
+                                                              >
+                                                                <X className="h-3 w-3" />
+                                                              </Button>
+                                                            </div>
                                                           </div>
                                                         ) : (
                                                           <>
-                                                            <div className="flex items-center">
-                                                              <div {...provided.dragHandleProps} className="mr-2 cursor-grab">
+                                                            <div className="flex items-center min-w-0 flex-1">
+                                                              <div
+                                                                {...provided.dragHandleProps}
+                                                                className="mr-2 cursor-grab flex-shrink-0"
+                                                              >
                                                                 <GripVertical className="h-4 w-4 text-muted-foreground" />
                                                               </div>
-                                                              <div>
-                                                                <p className="text-sm font-medium">{subItem.name}</p>
-                                                                <p className="text-xs text-muted-foreground">{subItem.href}</p>
+                                                              <div className="min-w-0">
+                                                                <p className="text-sm font-medium truncate">
+                                                                  {subItem.name}
+                                                                </p>
+                                                                <p className="text-xs text-muted-foreground truncate">
+                                                                  {subItem.href}
+                                                                </p>
                                                               </div>
                                                             </div>
                                                             <div className="flex gap-1">
-                                                              <Button 
-                                                                variant="ghost" 
-                                                                size="sm" 
+                                                              <Button
+                                                                variant="ghost"
+                                                                size="sm"
                                                                 onClick={() => handleEditSubmenuItem(item.id, subItem)}
                                                               >
                                                                 <Edit className="h-3 w-3" />
                                                               </Button>
-                                                              <Button 
-                                                                variant="ghost" 
-                                                                size="sm" 
-                                                                onClick={() => handleDeleteSubmenuItem(item.id, subItem.id)}
+                                                              <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() =>
+                                                                  handleDeleteSubmenuItem(item.id, subItem.id)
+                                                                }
                                                               >
                                                                 <Trash2 className="h-3 w-3" />
                                                               </Button>
@@ -877,7 +953,7 @@ export default function SiteSettingsPage() {
             </CardFooter>
           </Card>
         </TabsContent>
-        
+
         {/* Footer Tab */}
         <TabsContent value="footer" className="space-y-6 mt-6">
           <Card>
@@ -896,7 +972,7 @@ export default function SiteSettingsPage() {
                     disabled={saving}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="footer-tagline">Footer Tagline</Label>
                   <Textarea
@@ -907,195 +983,207 @@ export default function SiteSettingsPage() {
                   />
                 </div>
               </div>
-              
+
               {/* Contact Information */}
               <div className="space-y-4 pt-4 border-t">
                 <h3 className="text-lg font-medium">Contact Information</h3>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="address">Address</Label>
                   <Textarea
                     id="address"
                     value={settings.contactInfo.address}
-                    onChange={(e) => setSettings({ 
-                      ...settings, 
-                      contactInfo: { 
-                        ...settings.contactInfo, 
-                        address: e.target.value 
-                      } 
-                    })}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        contactInfo: {
+                          ...settings.contactInfo,
+                          address: e.target.value,
+                        },
+                      })
+                    }
                     rows={2}
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone</Label>
                     <Input
                       id="phone"
                       value={settings.contactInfo.phone}
-                      onChange={(e) => setSettings({ 
-                        ...settings, 
-                        contactInfo: { 
-                          ...settings.contactInfo, 
-                          phone: e.target.value 
-                        } 
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          contactInfo: {
+                            ...settings.contactInfo,
+                            phone: e.target.value,
+                          },
+                        })
+                      }
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
                       value={settings.contactInfo.email}
-                      onChange={(e) => setSettings({ 
-                        ...settings, 
-                        contactInfo: { 
-                          ...settings.contactInfo, 
-                          email: e.target.value 
-                        } 
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          contactInfo: {
+                            ...settings.contactInfo,
+                            email: e.target.value,
+                          },
+                        })
+                      }
                     />
                   </div>
                 </div>
               </div>
-              
+
               {/* Social Links */}
               <div className="space-y-4 pt-4 border-t">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h3 className="text-lg font-medium">Social Links</h3>
                   <Button onClick={handleAddSocialLink} size="sm">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Social Link
                   </Button>
                 </div>
-                
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Platform</TableHead>
-                      <TableHead>URL</TableHead>
-                      <TableHead>Icon</TableHead>
-                      <TableHead>Visible</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {settings.socialLinks.map((link) => (
-                      <TableRow key={link.platform}>
-                        {editingSocialLink === link.platform ? (
-                          <>
-                            <TableCell>
-                              <Input
-                                value={socialLinkForm.platform}
-                                onChange={(e) => setLinkForm({ ...socialLinkForm, platform: e.target.value })}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Input
-                                value={socialLinkForm.url}
-                                onChange={(e) => setLinkForm({ ...socialLinkForm, url: e.target.value })}
-                              />
-                            </TableCell>
-                            <TableCell>
-                              <Select
-                                value={socialLinkForm.icon}
-                                onValueChange={(value) => setLinkForm({ ...socialLinkForm, icon: value })}
-                              >
-                                <SelectTrigger className="w-[120px]">
-                                  <SelectValue placeholder="Select icon" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Facebook">Facebook</SelectItem>
-                                  <SelectItem value="Instagram">Instagram</SelectItem>
-                                  <SelectItem value="Twitter">Twitter</SelectItem>
-                                  <SelectItem value="Youtube">Youtube</SelectItem>
-                                  <SelectItem value="Linkedin">LinkedIn</SelectItem>
-                                  <SelectItem value="Mail">Mail</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell>
-                              <Switch
-                                checked={socialLinkForm.enabled}
-                                onCheckedChange={(checked) => setLinkForm({ ...socialLinkForm, enabled: checked })}
-                              />
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex justify-end gap-2">
-                                <Button variant="outline" size="sm" onClick={handleSaveSocialLink}>
-                                  <Check className="h-4 w-4" />
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={() => setEditingSocialLink(null)}>
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </>
-                        ) : (
-                          <>
-                            <TableCell>{link.platform}</TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <span className="truncate max-w-[150px]">{link.url}</span>
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon" 
-                                  className="h-6 w-6" 
-                                  onClick={() => window.open(link.url, '_blank')}
-                                >
-                                  <ExternalLink className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-full">
-                                {getSocialIcon(link.icon)}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <Switch
-                                checked={link.enabled}
-                                onCheckedChange={() => handleToggleSocialLink(link.platform)}
-                              />
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <div className="flex justify-end gap-2">
-                                <Button variant="outline" size="sm" onClick={() => handleEditSocialLink(link)}>
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={() => handleDeleteSocialLink(link.platform)}>
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
-                          </>
-                        )}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+
+                <div className="overflow-x-auto">
+                  <ScrollArea className="w-full">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Platform</TableHead>
+                          <TableHead>URL</TableHead>
+                          <TableHead>Icon</TableHead>
+                          <TableHead>Visible</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {settings.socialLinks.map((link) => (
+                          <TableRow key={link.platform}>
+                            {editingSocialLink === link.platform ? (
+                              <>
+                                <TableCell>
+                                  <Input
+                                    value={socialLinkForm.platform}
+                                    onChange={(e) => setLinkForm({ ...socialLinkForm, platform: e.target.value })}
+                                    className="w-full"
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <Input
+                                    value={socialLinkForm.url}
+                                    onChange={(e) => setLinkForm({ ...socialLinkForm, url: e.target.value })}
+                                    className="w-full"
+                                  />
+                                </TableCell>
+                                <TableCell>
+                                  <Select
+                                    value={socialLinkForm.icon}
+                                    onValueChange={(value) => setLinkForm({ ...socialLinkForm, icon: value })}
+                                  >
+                                    <SelectTrigger className="w-[120px]">
+                                      <SelectValue placeholder="Select icon" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="Facebook">Facebook</SelectItem>
+                                      <SelectItem value="Instagram">Instagram</SelectItem>
+                                      <SelectItem value="Twitter">Twitter</SelectItem>
+                                      <SelectItem value="Youtube">Youtube</SelectItem>
+                                      <SelectItem value="Linkedin">LinkedIn</SelectItem>
+                                      <SelectItem value="Mail">Mail</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </TableCell>
+                                <TableCell>
+                                  <Switch
+                                    checked={socialLinkForm.enabled}
+                                    onCheckedChange={(checked) => setLinkForm({ ...socialLinkForm, enabled: checked })}
+                                  />
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <div className="flex justify-end gap-2">
+                                    <Button variant="outline" size="sm" onClick={handleSaveSocialLink}>
+                                      <Check className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="outline" size="sm" onClick={() => setEditingSocialLink(null)}>
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </>
+                            ) : (
+                              <>
+                                <TableCell>{link.platform}</TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <span className="truncate max-w-[100px] sm:max-w-[150px]">{link.url}</span>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={() => window.open(link.url, "_blank")}
+                                    >
+                                      <ExternalLink className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-full">
+                                    {getSocialIcon(link.icon)}
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <Switch
+                                    checked={link.enabled}
+                                    onCheckedChange={() => handleToggleSocialLink(link.platform)}
+                                  />
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <div className="flex justify-end gap-2">
+                                    <Button variant="outline" size="sm" onClick={() => handleEditSocialLink(link)}>
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleDeleteSocialLink(link.platform)}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </>
+                            )}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </ScrollArea>
+                </div>
               </div>
-              
+
               {/* Quick Links */}
               <div className="space-y-4 pt-4 border-t">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <h3 className="text-lg font-medium">Quick Links</h3>
                   <Button onClick={handleAddQuickLink} size="sm">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Quick Link
                   </Button>
                 </div>
-                
+
                 <DragDropContext onDragEnd={handleReorderQuickLinks}>
                   <Droppable droppableId="quick-links">
                     {(provided) => (
-                      <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        className="space-y-2"
-                      >
+                      <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2">
                         {settings.quickLinks.length === 0 ? (
                           <p className="text-center py-4 text-muted-foreground">No quick links added yet</p>
                         ) : (
@@ -1105,11 +1193,14 @@ export default function SiteSettingsPage() {
                                 <div
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
-                                  className="flex items-center justify-between p-3 border rounded-md bg-background"
+                                  className="flex items-center justify-between p-3 border rounded-md bg-background flex-wrap gap-2"
                                 >
                                   {editingQuickLink === link.id ? (
-                                    <div className="flex-1 flex gap-2">
-                                      <div {...provided.dragHandleProps} className="flex items-center mr-2 cursor-grab">
+                                    <div className="flex-1 flex flex-col sm:flex-row gap-2 w-full">
+                                      <div
+                                        {...provided.dragHandleProps}
+                                        className="flex items-center mr-2 cursor-grab flex-shrink-0"
+                                      >
                                         <GripVertical className="h-5 w-5 text-muted-foreground" />
                                       </div>
                                       <Input
@@ -1128,40 +1219,50 @@ export default function SiteSettingsPage() {
                                         <Switch
                                           id={`quick-link-enabled-${link.id}`}
                                           checked={quickLinkForm.enabled}
-                                          onCheckedChange={(checked) => setQuickLinkForm({ ...quickLinkForm, enabled: checked })}
+                                          onCheckedChange={(checked) =>
+                                            setQuickLinkForm({ ...quickLinkForm, enabled: checked })
+                                          }
                                         />
-                                        <Label htmlFor={`quick-link-enabled-${link.id}`} className="text-sm">Enabled</Label>
+                                        <Label htmlFor={`quick-link-enabled-${link.id}`} className="text-sm">
+                                          Enabled
+                                        </Label>
                                       </div>
-                                      <Button variant="outline" size="sm" onClick={handleSaveQuickLink}>
-                                        <Check className="h-4 w-4" />
-                                      </Button>
-                                      <Button variant="outline" size="sm" onClick={() => setEditingQuickLink(null)}>
-                                        <X className="h-4 w-4" />
-                                      </Button>
+                                      <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" onClick={handleSaveQuickLink}>
+                                          <Check className="h-4 w-4" />
+                                        </Button>
+                                        <Button variant="outline" size="sm" onClick={() => setEditingQuickLink(null)}>
+                                          <X className="h-4 w-4" />
+                                        </Button>
+                                      </div>
                                     </div>
                                   ) : (
                                     <>
-                                      <div className="flex items-center">
-                                        <div {...provided.dragHandleProps} className="mr-2 cursor-grab">
+                                      <div className="flex items-center min-w-0 flex-1">
+                                        <div {...provided.dragHandleProps} className="mr-2 cursor-grab flex-shrink-0">
                                           <GripVertical className="h-5 w-5 text-muted-foreground" />
                                         </div>
-                                        <div>
-                                          <div className="flex items-center">
-                                            <p className="font-medium">{link.name}</p>
+                                        <div className="min-w-0">
+                                          <div className="flex items-center flex-wrap gap-1">
+                                            <p className="font-medium truncate">{link.name}</p>
                                             {!link.enabled && (
-                                              <span className="ml-2 text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded">
+                                              <span className="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded">
                                                 Hidden
                                               </span>
                                             )}
                                           </div>
-                                          <p className="text-sm text-muted-foreground">{link.href}</p>
+                                          <p className="text-sm text-muted-foreground truncate">{link.href}</p>
                                         </div>
                                       </div>
                                       <div className="flex gap-2">
                                         <Button variant="outline" size="sm" onClick={() => handleEditQuickLink(link)}>
                                           <Edit className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="outline" size="sm" onClick={() => handleDeleteQuickLink(link.id)}>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => handleDeleteQuickLink(link.id)}
+                                        >
                                           <Trash2 className="h-4 w-4" />
                                         </Button>
                                       </div>
@@ -1178,11 +1279,11 @@ export default function SiteSettingsPage() {
                   </Droppable>
                 </DragDropContext>
               </div>
-              
+
               {/* Copyright & Developer Info */}
               <div className="space-y-4 pt-4 border-t">
                 <h3 className="text-lg font-medium">Copyright & Credits</h3>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="copyright-text">Copyright Text</Label>
                   <Input
@@ -1192,52 +1293,60 @@ export default function SiteSettingsPage() {
                     placeholder="© {year} Your Organization. All rights reserved."
                   />
                   <p className="text-sm text-muted-foreground">
-                    Use {'{year}'} to automatically insert the current year
+                    Use {"{year}"} to automatically insert the current year
                   </p>
                 </div>
-                
+
                 <div className="space-y-2">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
                     <Label htmlFor="developer-info">Developer Credit</Label>
                     <div className="flex items-center space-x-2">
                       <Switch
                         id="developer-credit-enabled"
                         checked={settings.developerInfo.enabled}
-                        onCheckedChange={(checked) => setSettings({ 
-                          ...settings, 
-                          developerInfo: { 
-                            ...settings.developerInfo, 
-                            enabled: checked 
-                          } 
-                        })}
+                        onCheckedChange={(checked) =>
+                          setSettings({
+                            ...settings,
+                            developerInfo: {
+                              ...settings.developerInfo,
+                              enabled: checked,
+                            },
+                          })
+                        }
                       />
-                      <Label htmlFor="developer-credit-enabled" className="text-sm">Show Credit</Label>
+                      <Label htmlFor="developer-credit-enabled" className="text-sm">
+                        Show Credit
+                      </Label>
                     </div>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Input
                       id="developer-name"
                       value={settings.developerInfo.name}
-                      onChange={(e) => setSettings({ 
-                        ...settings, 
-                        developerInfo: { 
-                          ...settings.developerInfo, 
-                          name: e.target.value 
-                        } 
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          developerInfo: {
+                            ...settings.developerInfo,
+                            name: e.target.value,
+                          },
+                        })
+                      }
                       placeholder="Developer/Agency Name"
                     />
                     <Input
                       id="developer-url"
                       value={settings.developerInfo.url}
-                      onChange={(e) => setSettings({ 
-                        ...settings, 
-                        developerInfo: { 
-                          ...settings.developerInfo, 
-                          url: e.target.value 
-                        } 
-                      })}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          developerInfo: {
+                            ...settings.developerInfo,
+                            url: e.target.value,
+                          },
+                        })
+                      }
                       placeholder="https://example.com"
                     />
                   </div>
@@ -1255,3 +1364,4 @@ export default function SiteSettingsPage() {
     </div>
   )
 }
+

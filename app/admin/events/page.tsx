@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Edit, Plus, Search, Trash2 } from "lucide-react"
+import { Edit, Plus, Search, Trash2, ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
@@ -126,9 +126,14 @@ export default function AdminEventsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-bold">Events Management</h1>
-        <Button asChild>
+      {/* Back Button Section */}
+      <div className="flex items-center gap-4 flex-col sm:flex-row sm:items-center sm:gap-6">
+        <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        <h1 className="text-3xl font-bold sm:text-4xl">Events Management</h1>
+        <Button asChild className="w-full sm:w-auto">
           <Link href="/admin/events/new">
             <Plus className="mr-2 h-4 w-4" />
             Add New Event
@@ -143,7 +148,7 @@ export default function AdminEventsPage() {
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="Search events..."
-                className="pl-10"
+                className="pl-10 w-full sm:w-96"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -230,4 +235,3 @@ export default function AdminEventsPage() {
     </div>
   )
 }
-

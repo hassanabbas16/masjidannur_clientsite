@@ -111,7 +111,8 @@ export default function DonationTypesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-3xl font-bold">Manage Donation Types</h1>
         <Button 
           variant="secondary"
@@ -125,15 +126,17 @@ export default function DonationTypesPage() {
         </Button>
       </div>
 
+      {/* Button Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <Button asChild>
-          <Link href="/admin/donations/types/new">
+          <Link href="/admin/donations/types/new" className="flex items-center">
             <Plus className="mr-2 h-4 w-4" />
             Add New Type
           </Link>
         </Button>
       </div>
 
+      {/* Card for Donation Types Table */}
       <Card>
         <CardHeader>
           <CardTitle>Manage Donation Types</CardTitle>
@@ -205,6 +208,7 @@ export default function DonationTypesPage() {
         </CardContent>
       </Card>
 
+      {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -222,4 +226,3 @@ export default function DonationTypesPage() {
     </div>
   )
 }
-

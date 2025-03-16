@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Edit, Plus, Search, Trash2, ExternalLink, FileText, Link2, Video, Image } from "lucide-react"
+import { Edit, Plus, Search, Trash2, ExternalLink, FileText, Link2, Video, Image, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -163,8 +163,17 @@ export default function RamadanResourcesPage() {
 
   return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto mb-4">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+      </div>
+
+      {/* Title and Add New Resource Button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-3xl font-bold">Ramadan Resources</h1>
+        <h1 className="text-3xl font-bold text-center sm:text-left">Ramadan Resources</h1>
         <Button asChild>
           <Link href="/admin/ramadan/resources/new">
             <Plus className="mr-2 h-4 w-4" />
@@ -297,4 +306,3 @@ export default function RamadanResourcesPage() {
     </div>
   )
 }
-

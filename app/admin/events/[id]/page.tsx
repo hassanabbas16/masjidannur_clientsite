@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import EventForm from "@/components/admin/event-form"
+import { Button } from "@/components/ui/button"
+import { ChevronLeft } from "lucide-react"
 
 // Add Event type
 interface Event {
@@ -22,7 +24,7 @@ interface Event {
 
 export default function EditEventPage() {
   const params = useParams()
-  // Add proper typing to useState
+  const router = useRouter() // Hook to navigate
   const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -67,9 +69,14 @@ export default function EditEventPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Edit Event</h1>
+      <div className="flex items-center space-x-4">
+        <Button variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        <h1 className="text-3xl font-bold">Edit Event</h1>
+      </div>
       <EventForm initialData={event} isEditing />
     </div>
   )
 }
-
