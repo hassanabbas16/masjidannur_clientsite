@@ -104,3 +104,29 @@ export async function PUT(req: Request) {
   }
 }
 
+export async function POST(req: Request) {
+  try {
+    await dbConnect()
+
+    const body = await req.json()
+
+    // Find active settings
+    let settings = await HomePageSettings.findOne({ isActive: true })
+
+    if (!settings) {
+      // Create new settings if none exists
+      settings = await HomePageSettings.create({
+        ...body,
+        isActive: true,
+      })
+    } else {
+      // Update existing settings
+      settings = await HomePageSettings.findByIdAndUpdate(settings._id, body, { new: true, runValidators: true })
+    }
+
+    return NextResponse.json(settings)
+  } catch (error) {
+    console.error("Error creating/updating home page settings:", error)
+    return NextResponse.json({ error: "Failed to create/update home page settings" }, { status: 500 })
+  }
+}

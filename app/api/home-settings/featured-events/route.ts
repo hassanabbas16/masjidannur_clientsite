@@ -72,3 +72,38 @@ export async function PUT(req: Request) {
   }
 }
 
+export async function POST(req: Request) {
+  try {
+    await dbConnect()
+
+    const body = await req.json()
+
+    // Check if eventIds are provided
+    if (!body.eventIds || body.eventIds.length === 0) {
+      return NextResponse.json({ error: "Event IDs are required" }, { status: 400 })
+    }
+
+    // Get active settings
+    let settings = await HomePageSettings.findOne({ isActive: true })
+
+    if (!settings) {
+      // Create new settings if none exists
+      settings = await HomePageSettings.create({
+        featuredEventIds: body.eventIds,
+        isActive: true,
+      })
+    } else {
+      // Update existing settings with new featured event IDs
+      settings = await HomePageSettings.findByIdAndUpdate(
+        settings._id,
+        { featuredEventIds: body.eventIds },
+        { new: true }
+      )
+    }
+
+    return NextResponse.json(settings)
+  } catch (error) {
+    console.error("Error creating/updating featured events:", error)
+    return NextResponse.json({ error: "Failed to create/update featured events" }, { status: 500 })
+  }
+}

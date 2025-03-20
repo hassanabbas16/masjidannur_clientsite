@@ -1,5 +1,5 @@
 import axios from "axios"
-import moment from "moment"
+import moment from "moment-timezone"
 
 interface PrayerTimings {
   Fajr: string
@@ -85,14 +85,14 @@ export function getNextPrayer(timings: PrayerTimings): { name: string; time: str
     { name: "Isha", time: timings.Isha },
   ]
 
-  const now = moment()
+  const now = moment().tz("America/Chicago")  // Set to Fort Smith local time
 
-  // Convert prayer times to moment objects for today
+  // Convert prayer times to moment objects for today in Fort Smith local time
   const prayerMoments = prayers.map((prayer) => {
     const [hours, minutes] = prayer.time.split(":").map(Number)
     return {
       name: prayer.name,
-      moment: moment().hours(hours).minutes(minutes).seconds(0),
+      moment: moment().tz("America/Chicago").hours(hours).minutes(minutes).seconds(0),
     }
   })
 
@@ -104,7 +104,7 @@ export function getNextPrayer(timings: PrayerTimings): { name: string; time: str
     const [hours, minutes] = prayers[0].time.split(":").map(Number)
     nextPrayer = {
       name: "Fajr (Tomorrow)",
-      moment: moment().add(1, "day").hours(hours).minutes(minutes).seconds(0),
+      moment: moment().tz("America/Chicago").add(1, "day").hours(hours).minutes(minutes).seconds(0),
     }
   }
 
@@ -125,7 +125,7 @@ export function formatPrayerTimes(timings: PrayerTimings): { [key: string]: stri
 
   Object.entries(timings).forEach(([prayer, time]) => {
     const [hours, minutes] = time.split(":").map(Number)
-    formattedTimes[prayer] = moment().hours(hours).minutes(minutes).format("h:mm A")
+    formattedTimes[prayer] = moment().tz("America/Chicago").hours(hours).minutes(minutes).format("h:mm A")
   })
 
   return formattedTimes
@@ -141,4 +141,3 @@ export function getRamadanDay(hijriDate: { day: string; month: { number: number 
   }
   return 0
 }
-

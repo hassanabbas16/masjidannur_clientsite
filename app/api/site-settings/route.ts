@@ -128,3 +128,29 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Failed to update site settings" }, { status: 500 })
   }
 }
+export async function POST(req: Request) {
+  try {
+    await dbConnect()
+
+    const body = await req.json()
+
+    // Find active settings
+    let settings = await SiteSettings.findOne({ isActive: true })
+
+    if (!settings) {
+      // Create new settings if none exists
+      settings = await SiteSettings.create({
+        ...body,
+        isActive: true,
+      })
+    } else {
+      // Update existing settings
+      settings = await SiteSettings.findByIdAndUpdate(settings._id, body, { new: true, runValidators: true })
+    }
+
+    return NextResponse.json(settings)
+  } catch (error) {
+    console.error("Error creating/updating site settings:", error)
+    return NextResponse.json({ error: "Failed to create/update site settings" }, { status: 500 })
+  }
+}

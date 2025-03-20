@@ -122,10 +122,10 @@ export default function IftarTimesPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-[#0D7A3B] text-white overflow-hidden">
+      <section className="relative bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden">
         <div className="absolute inset-0 bg-pattern opacity-5"></div>
         <div className="container relative py-20 md:py-28 flex flex-col items-center text-center">
-          <h1 className="font-heading font-bold text-4xl md:text-5xl lg:text-6xl max-w-4xl mb-6">
+          <h1 className="font-heading font-bold text-3xl md:text-4xl lg:text-5xl xl:text-6xl max-w-4xl mb-6">
             Ramadan Sehri and Iftar Times
           </h1>
           <p className="text-lg md:text-xl text-white/90 max-w-2xl">
@@ -187,8 +187,8 @@ export default function IftarTimesPage() {
                             <td className="px-4 py-3 border-t">{day.gregorianDate}</td>
                             <td className="px-4 py-3 border-t">{day.hijriFullDate}</td>
                             <td className="px-4 py-3 border-t">{day.day}</td>
-                            <td className="px-4 py-3 border-t text-center">{day.sehri}</td>
-                            <td className="px-4 py-3 border-t text-center">{day.iftar}</td>
+                            <td className="px-4 py-3 border-t text-center whitespace-nowrap">{day.sehri}</td>
+                            <td className="px-4 py-3 border-t text-center whitespace-nowrap">{day.iftar}</td>
                           </tr>
                         )
                       })}

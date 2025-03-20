@@ -121,7 +121,7 @@ export default function RamadanPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-[#0D7A3B] text-white overflow-hidden">
+      <section className="relative bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden">
         <div className="absolute inset-0 bg-pattern opacity-5"></div>
         <div className="container relative py-20 md:py-28 flex flex-col items-center text-center">
           <h1 className="font-heading font-bold text-4xl md:text-5xl lg:text-6xl max-w-4xl mb-6">
@@ -172,7 +172,7 @@ export default function RamadanPage() {
         </Card>
 
         {/* Prayer Times Cards */}
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           <Card className="border-0 shadow-elegant overflow-hidden">
             <CardHeader className="bg-primary/10">
               <CardTitle className="flex items-center">
@@ -224,7 +224,7 @@ export default function RamadanPage() {
           </div>
 
           <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-6">
+            <TabsList className="mb-6 flex flex-wrap">
               <TabsTrigger value="all">All Events</TabsTrigger>
               <TabsTrigger value="lecture">Lectures</TabsTrigger>
               <TabsTrigger value="taraweeh">Taraweeh</TabsTrigger>
@@ -236,42 +236,45 @@ export default function RamadanPage() {
               {filteredEvents.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">No events found for this category.</div>
               ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 6).map((event) => (
-                    <Card key={event._id} className="border-0 shadow-elegant overflow-hidden h-full">
-                      <CardHeader>
-                        <div className="flex justify-between items-start">
-                          <CardTitle>{event.title}</CardTitle>
-                          <Badge variant="outline" className="capitalize">
-                            {event.eventType}
-                          </Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="mb-4 text-muted-foreground">{event.description}</p>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex items-center">
-                            <Calendar className="mr-2 h-4 w-4 text-primary" />
-                            <span>{moment(event.date).format("MMMM D, YYYY")}</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredEvents
+                    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                    .slice(0, 6)
+                    .map((event) => (
+                      <Card key={event._id} className="border-0 shadow-elegant overflow-hidden h-full">
+                        <CardHeader>
+                          <div className="flex justify-between items-start">
+                            <CardTitle>{event.title}</CardTitle>
+                            <Badge variant="outline" className="capitalize">
+                              {event.eventType}
+                            </Badge>
                           </div>
-                          <div className="flex items-center">
-                            <Clock className="mr-2 h-4 w-4 text-primary" />
-                            <span>{event.time}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <MapPin className="mr-2 h-4 w-4 text-primary" />
-                            <span>{event.location}</span>
-                          </div>
-                          {event.speaker && (
+                        </CardHeader>
+                        <CardContent>
+                          <p className="mb-4 text-muted-foreground">{event.description}</p>
+                          <div className="space-y-2 text-sm">
                             <div className="flex items-center">
-                              <Users className="mr-2 h-4 w-4 text-primary" />
-                              <span>{event.speaker}</span>
+                              <Calendar className="mr-2 h-4 w-4 text-primary" />
+                              <span>{moment(event.date).format("MMMM D, YYYY")}</span>
                             </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                            <div className="flex items-center">
+                              <Clock className="mr-2 h-4 w-4 text-primary" />
+                              <span>{event.time}</span>
+                            </div>
+                            <div className="flex items-center">
+                              <MapPin className="mr-2 h-4 w-4 text-primary" />
+                              <span>{event.location}</span>
+                            </div>
+                            {event.speaker && (
+                              <div className="flex items-center">
+                                <Users className="mr-2 h-4 w-4 text-primary" />
+                                <span>{event.speaker}</span>
+                              </div>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                 </div>
               )}
             </TabsContent>

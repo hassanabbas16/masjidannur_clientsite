@@ -153,28 +153,27 @@ export default function DonationsPage() {
     return donations.filter((donation) => {
       const matchesSearch =
         donation.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (donation.name && donation.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        (donation.name && donation.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
-      let matchesType = true;
+      let matchesType = true
       if (selectedType !== "all") {
-        matchesType = donation.donationType._id === selectedType;
+        matchesType = donation.donationType && donation.donationType._id === selectedType
       }
 
-      let matchesStatus = true;
+      let matchesStatus = true
       if (selectedStatus !== "all") {
-        matchesStatus = donation.status === selectedStatus;
+        matchesStatus = donation.status === selectedStatus
       }
 
-      const matchesDate = !date?.from || (
-        new Date(donation.createdAt) >= date.from &&
-        (!date.to || new Date(donation.createdAt) <= date.to)
-      );
+      const matchesDate =
+        !date?.from ||
+        (new Date(donation.createdAt) >= date.from && (!date.to || new Date(donation.createdAt) <= date.to))
 
-      return matchesSearch && matchesType && matchesStatus && matchesDate;
-    });
-  };
+      return matchesSearch && matchesType && matchesStatus && matchesDate
+    })
+  }
 
-  const filteredDonations = getFilteredDonations();
+  const filteredDonations = getFilteredDonations()
 
   return (
     <div className="space-y-6 px-4 sm:px-6 lg:px-8">
@@ -188,22 +187,12 @@ export default function DonationsPage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">Donations</h1>
 
         <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
-          <Button 
-            variant="secondary"
-            className="text-foreground w-full sm:w-auto"
-            onClick={exportToCsv}
-          >
+          <Button variant="secondary" className="text-foreground w-full sm:w-auto" onClick={exportToCsv}>
             <Download className="mr-2 h-4 w-4" />
             Export CSV
           </Button>
-          <Button 
-            variant="secondary"
-            className="text-foreground w-full sm:w-auto"
-            asChild
-          >
-            <Link href="/admin/donations/types">
-              Manage Donation Types
-            </Link>
+          <Button variant="secondary" className="text-foreground w-full sm:w-auto" asChild>
+            <Link href="/admin/donations/types">Manage Donation Types</Link>
           </Button>
         </div>
       </div>
@@ -320,12 +309,12 @@ export default function DonationsPage() {
                           {donation.anonymous ? (
                             <span className="font-medium">Anonymous</span>
                           ) : (
-                            <span className="font-medium">{donation.name}</span>
+                            <span className="font-medium">{donation.name || "Unnamed"}</span>
                           )}
                           <div className="text-sm text-muted-foreground">{donation.email}</div>
                         </div>
                       </TableCell>
-                      <TableCell>{donation.donationType.name}</TableCell>
+                      <TableCell>{donation.donationType ? donation.donationType.name : "Unknown"}</TableCell>
                       <TableCell>
                         <div>
                           <div className="font-medium">${donation.amount.toFixed(2)}</div>
@@ -357,3 +346,4 @@ export default function DonationsPage() {
     </div>
   )
 }
+

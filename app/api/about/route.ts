@@ -69,6 +69,29 @@ export async function GET() {
   }
 }
 
+export async function POST(req: Request) {
+  try {
+    await dbConnect()
+
+    const body = await req.json()
+
+    // Find the about page content or create a new one
+    let about = await About.findOne()
+
+    if (about) {
+      // Update the existing about content
+      about = await About.findByIdAndUpdate(about._id, body, { new: true, runValidators: true })
+    } else {
+      // Create a new about content if it doesn't exist
+      about = await About.create(body)
+    }
+
+    return NextResponse.json(about)
+  } catch (error) {
+    console.error("Error updating/creating about page:", error)
+    return NextResponse.json({ error: "Failed to update/ create about page" }, { status: 500 })
+  }
+}
 export async function PUT(req: Request) {
   try {
     await dbConnect()

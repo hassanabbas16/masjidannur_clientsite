@@ -6,7 +6,7 @@ export async function GET() {
   try {
     await dbConnect()
 
-    const donationTypes = await DonationType.find({ isActive: true }).sort({ name: 1 })
+    const donationTypes = await DonationType.find().sort({ name: 1 })
 
     return NextResponse.json(donationTypes)
   } catch (error) {

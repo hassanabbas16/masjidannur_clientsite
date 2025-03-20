@@ -298,7 +298,7 @@
     if (loading) {
       return (
         <div className="flex flex-col min-h-screen">
-          <section className="relative bg-[#0D7A3B] text-white overflow-hidden">
+          <section className="relative bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden">
             <div className="absolute inset-0 bg-pattern opacity-5"></div>
             <div className="container relative py-16 md:py-28 flex flex-col items-center text-center px-4">
               <h1 className="font-heading font-bold text-3xl md:text-5xl lg:text-6xl max-w-4xl mb-4">
@@ -320,7 +320,7 @@
       <FormProvider {...formMethods}>
         <div className="flex flex-col min-h-screen">
           {/* Hero Section */}
-          <section className="relative bg-[#0D7A3B] text-white overflow-hidden">
+          <section className="relative bg-gradient-to-r from-green-600 to-green-700 text-white overflow-hidden">
             <div className="absolute inset-0 bg-pattern opacity-5"></div>
             <div className="container relative py-16 md:py-28 flex flex-col items-center text-center px-4">
               <h1 className="font-heading font-bold text-3xl md:text-5xl lg:text-6xl max-w-4xl mb-4">

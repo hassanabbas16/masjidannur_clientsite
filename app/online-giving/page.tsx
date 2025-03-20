@@ -30,6 +30,8 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 interface DonationType {
   _id: string
   name: string
+  description: string
+  isActive: boolean
   icon: string
 }
 
@@ -53,20 +55,15 @@ const formSchema = z
     name: z.string().optional(),
     email: z.string().email({ message: "Please enter a valid email address." }),
     phone: z.string().refine(
-      (value) => {
-        if (!value) return true
-        try {
-          const phoneNumber = parsePhoneNumberWithError(value)
-          return phoneNumber.isValid()
-        } catch {
-          return false
-        }
-      },
-      {
-        message:
-          "Please enter a valid international phone number. Example: +1 123-456-7890 or +44 7911 123456.",
-      }
-    ),    
+  (value) => {
+    const phoneRegex = /^[+]?[0-9\s()-]*$/; // Allow numbers with optional spaces, parentheses, and country code (+)
+    return phoneRegex.test(value); // Test the value against the regex
+  },
+  {
+    message: "Please enter a valid phone number. Example: 123-456-7890 or +1 123 456 7890.",
+  }
+),
+    
     anonymous: z.boolean().default(false),
     coverFees: z.boolean().default(true),
   })
@@ -109,7 +106,9 @@ export default function OnlineGivingPage() {
       try {
         const response = await fetch("/api/donation-types")
         if (response.ok) {
-          const data = await response.json()
+          let data: DonationType[] = await response.json()
+          // Filter only active donation types
+          data = data.filter((donationType) => donationType.isActive)
           setDonationTypes(data)
           if (data.length > 0) {
             form.setValue("donationType", data[0].name)
@@ -595,7 +594,7 @@ export default function OnlineGivingPage() {
 
           <div className="mt-8 text-center text-sm text-slate-500">
             <p>Need help? Contact our support team at info@emergitechsolutions.com</p>
-            <p className="mt-2">© {new Date().getFullYear()} Masjid AnNoor. All rights reserved.</p>
+            <p className="mt-2">© {new Date().getFullYear()} Masjid Annoor. All rights reserved.</p>
           </div>
         </div>
       </div>
