@@ -382,31 +382,31 @@
                 </Card>
 
                 {/* Sponsored Days Card */}
-                <Card className="border-0 shadow-elegant overflow-hidden">
-                  <CardHeader className="bg-primary text-primary-foreground">
-                    <CardTitle className="text-lg md:text-xl">Already Sponsored Days</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-4 md:p-6">
-                    <div className="space-y-3">
-                      {ramadanDates
-                        .filter((day) => !day.available)
-                        .map((day) => (
-                          <div key={day._id} className="flex flex-col xs:flex-row justify-between items-start gap-2">
-                            <span className="text-sm">{format(new Date(day.date), "MMM d, yyyy")}</span>
-                            <Badge variant="secondary" className="text-xs md:text-sm">
-                              {day.sponsorName}
-                            </Badge>
-                          </div>
-                        ))}
-
-                      {ramadanDates.filter((day) => !day.available).length === 0 && (
-                        <p className="text-center text-muted-foreground text-sm">
-                          No sponsored days yet. Be the first to sponsor!
-                        </p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+              <Card className="border-0 shadow-elegant overflow-hidden">
+                <CardHeader className="bg-primary text-primary-foreground">
+                  <CardTitle className="text-lg md:text-xl">Already Sponsored Days</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 md:p-6">
+                  <div className="space-y-3">
+                    {ramadanDates
+                      .filter((day) => !day.available && day.sponsorName && day.sponsorName.trim() !== "")
+                      .map((day) => (
+                        <div key={day._id} className="flex flex-col xs:flex-row justify-between items-start gap-2">
+                          <span className="text-sm">{format(new Date(day.date), "MMM d, yyyy")}</span>
+                          <Badge variant="secondary" className="text-xs md:text-sm">
+                            {day.sponsorName}
+                          </Badge>
+                        </div>
+                      ))}
+              
+                    {ramadanDates.filter((day) => !day.available && day.sponsorName && day.sponsorName.trim() !== "").length === 0 && (
+                      <p className="text-center text-muted-foreground text-sm">
+                        No sponsored days yet. Be the first to sponsor!
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
               </div>
 
               {/* Sidebar */}
