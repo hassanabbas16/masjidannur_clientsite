@@ -13,6 +13,7 @@ export interface IDonation extends Document {
   stripePaymentIntentId: string
   stripeCustomerId: string
   notes: string
+  emailSent: boolean // New field to track if the email has been sent
   createdAt: Date
   updatedAt: Date
 }
@@ -35,9 +36,9 @@ const DonationSchema: Schema = new Schema(
     stripePaymentIntentId: { type: String },
     stripeCustomerId: { type: String },
     notes: { type: String },
+    emailSent: { type: Boolean, default: false }, // Add the emailSent flag
   },
   { timestamps: true },
 )
 
 export default mongoose.models.Donation || mongoose.model<IDonation>("Donation", DonationSchema)
-
