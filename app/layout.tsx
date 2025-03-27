@@ -41,15 +41,17 @@ export const metadata: Metadata = {
       },
     ],
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
   authors: [{ name: "Masjid Annoor Team", url: "https://www.masjidannoorfs.com" }],
   category: "Religious Organization",
   generator: "Next.js",
   applicationName: "Masjid Annoor Website",
+}
+
+// ✅ Separate export for viewport configuration
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 }
 
 export default function RootLayout({
