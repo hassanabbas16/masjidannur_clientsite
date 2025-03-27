@@ -102,10 +102,9 @@ export default function SponsorIftarPage() {
     .string()
     .min(10, { message: "Please enter a valid phone number with at least 10 digits." })
     .regex(
-      /^(\+?\d{1,3}[-.\s]?)?(\(?\d{1,4}\)?[-.\s]?)?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
-      { message: "Please enter a valid phone number. Example: +1 123-456-7890 or 123-456-7890." }
-    ),
-
+      /^(?:\+?\d{1,3}[-.\s]?)?(\(?\d{1,3}\)?[-.\s]?)?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
+      "Please enter a valid phone number. Example: +1 123-456-7890 or 123-456-7890.",
+    ),  
     amount: settings?.iftarEnabled
       ? z
           .string()
@@ -205,15 +204,15 @@ export default function SponsorIftarPage() {
     if (!selectedDate) return
     setIsSubmitting(true)
 
-    // Basic honeypot check
-    if (values.website) {
-      // If the honeypot field is filled, it's likely a bot
-      setErrorMessage("Possible bot detected. Please try again.")
-      setIsSubmitting(false)
-      return
-    }
-
     try {
+      // Check if honeypot field is filled (bot detection)
+      if (values.website && values.website.length > 0) {
+        // Silently reject but pretend success
+        setIsDialogOpen(false)
+        router.push("/ramadan")
+        return
+      }
+
       // If iftar cost is disabled (free), submit directly without payment
       if (!settings?.iftarEnabled) {
         const selectedDay = ramadanDates.find(
@@ -224,6 +223,32 @@ export default function SponsorIftarPage() {
           throw new Error("Selected date not found")
         }
 
+        // Send email notification for free iftar
+        const emailResponse = await fetch("/api/send-free-iftar-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: values.name,
+            email: values.email,
+            phone: values.phone,
+            date: selectedDate.toISOString(),
+            honeypot: values.website,
+          }),
+        })
+
+        if (!emailResponse.ok) {
+          const errorData = await emailResponse.json()
+          if (errorData.error === "Too many requests. Please try again later.") {
+            setErrorMessage("Too many sponsorship attempts. Please try again in 5 minutes.")
+            setIsSubmitting(false)
+            return
+          }
+          throw new Error(errorData.error || "Failed to send email notification")
+        }
+
+        // Update the date in the database
         const response = await fetch(`/api/ramadan-dates/${selectedDay._id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -269,6 +294,7 @@ export default function SponsorIftarPage() {
           date: selectedDate.toISOString(),
           dateId: ramadanDates.find((day) => new Date(day.date).toDateString() === selectedDate.toDateString())?._id,
           sponsorName: values.name,
+          honeypot: values.website, // Pass honeypot field to API
         }),
       })
 
@@ -699,3 +725,4 @@ export default function SponsorIftarPage() {
     </FormProvider>
   )
 }
+
