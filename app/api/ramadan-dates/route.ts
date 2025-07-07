@@ -5,33 +5,52 @@ import RamadanSettings from "@/models/ramadanSettings"
 
 export async function GET(req: Request) {
   try {
-    await dbConnect()
+    await dbConnect();
 
-    const url = new URL(req.url)
-    const year = url.searchParams.get("year")
-    const available = url.searchParams.get("available")
+    const url = new URL(req.url);
+    const year = url.searchParams.get("year");
+    const available = url.searchParams.get("available");
 
-    const query: any = {}
+    const query: any = {};
     if (year) {
-      query.year = Number.parseInt(year)
+      query.year = Number.parseInt(year);
     } else {
       // Default to current year if not specified
-      const currentYear = new Date().getFullYear()
-      query.year = currentYear
+      const currentYear = new Date().getFullYear();
+      query.year = currentYear;
     }
 
     if (available !== null) {
-      query.available = available === "true"
+      query.available = available === "true";
     }
 
-    const dates = await RamadanDate.find(query).sort({ date: 1 })
+    // Get current date
+    const currentDate = new Date();
 
-    return NextResponse.json(dates)
+    // Fetch dates
+    const dates = await RamadanDate.find(query).sort({ date: 1 });
+
+    // Check & update expired dates dynamically
+    const updates = [];
+    for (const date of dates) {
+      if (date.available && date.date < currentDate) {
+        date.available = false;
+        updates.push(date.save()); // Save changes
+      }
+    }
+    
+    // Wait for all updates to finish
+    if (updates.length > 0) {
+      await Promise.all(updates);
+    }
+
+    return NextResponse.json(dates);
   } catch (error) {
-    console.error("Error fetching Ramadan dates:", error)
-    return NextResponse.json({ error: "Failed to fetch Ramadan dates" }, { status: 500 })
+    console.error("Error fetching Ramadan dates:", error);
+    return NextResponse.json({ error: "Failed to fetch Ramadan dates" }, { status: 500 });
   }
 }
+
 
 export async function POST(req: Request) {
   try {

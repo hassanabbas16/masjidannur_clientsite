@@ -1,15 +1,15 @@
-"use client";
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/use-toast";
-import { Mail, Phone, MapPin, Clock } from "lucide-react";
+"use client"
+import { useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { toast } from "@/components/ui/use-toast"
+import { Mail, Phone, MapPin, Clock, Loader2 } from "lucide-react"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -18,71 +18,107 @@ const formSchema = z.object({
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
+  phone: z.string().optional(),
   subject: z.string().min(5, {
     message: "Subject must be at least 5 characters.",
   }),
   message: z.string().min(10, {
     message: "Message must be at least 10 characters.",
   }),
-});
+})
 
 export default function ContactPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
+      phone: "",
       subject: "",
       message: "",
     },
-  });
+  })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsSubmitting(true);
-    const url = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_WEB_APP_URL;
-    if (!url) {
-      console.error("URL is not defined");
-      toast({
-        title: "Error",
-        description: "The URL is not defined. Please check your environment variables.",
-      });
-      setIsSubmitting(false);
-      return;
+    setIsSubmitting(true)
+
+    // Send to Google Apps Script if URL is available
+    const sendToGoogle = async () => {
+      const url = process.env.NEXT_PUBLIC_GOOGLE_APPS_SCRIPT_WEB_APP_URL
+      if (!url) {
+        console.warn("Google Apps Script URL is not defined")
+        return
+      }
+
+      const data = {
+        name: values.name,
+        email: values.email,
+        subject: values.subject,
+        message: values.message,
+        phone: values.phone || "Not provided",
+      }
+
+      try {
+        await fetch(url, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+      } catch (error) {
+        console.error("Error sending to Google:", error)
+        // Continue even if Google submission fails
+      }
     }
-  
-    const data = {
-      name: values.name,
-      email: values.email,
-      subject: values.subject,
-      message: values.message,
-    };
-  
-    fetch(url, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
+
+    // Send confirmation emails
+    const sendEmails = async () => {
+      try {
+        const response = await fetch("/api/send-contact-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: values.name,
+            email: values.email,
+            phone: values.phone || "Not provided",
+            subject: values.subject,
+            message: values.message,
+          }),
+        })
+
+        if (!response.ok) {
+          console.error("Failed to send emails")
+        }
+      } catch (error) {
+        console.error("Error sending emails:", error)
+        // Continue even if email sending fails
+      }
+    }
+
+    // Execute all operations
+    Promise.all([sendToGoogle(), sendEmails()])
       .then(() => {
-        setIsSubmitting(false);
+        setIsSubmitting(false)
         toast({
           title: "Message Sent",
           description: "Thank you for your message. We will get back to you soon.",
-        });
-        form.reset();
+        })
+        form.reset()
       })
-      .catch(error => {
-        console.error('Error:', error);
-        setIsSubmitting(false);
+      .catch((error) => {
+        console.error("Error:", error)
+        setIsSubmitting(false)
         toast({
           title: "Error",
           description: "There was an error submitting your message. Please try again.",
-        });
-      });
+        })
+      })
   }
 
   return (
@@ -136,6 +172,19 @@ export default function ContactPage() {
                   />
                   <FormField
                     control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone (Optional)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your phone number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
                     name="subject"
                     render={({ field }) => (
                       <FormItem>
@@ -161,7 +210,14 @@ export default function ContactPage() {
                     )}
                   />
                   <Button type="submit" className="w-full" disabled={isSubmitting}>
-                    {isSubmitting ? "Sending..." : "Send Message"}
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      "Send Message"
+                    )}
                   </Button>
                 </form>
               </Form>
@@ -170,44 +226,46 @@ export default function ContactPage() {
 
           {/* Contact Information */}
           <div className="space-y-8">
-          <Card className="border-0 shadow-elegant overflow-hidden">
-    <CardHeader className="bg-primary text-primary-foreground">
-      <CardTitle>Contact Information</CardTitle>
-    </CardHeader>
-    <CardContent className="p-6">
-      <div className="space-y-4">
-        <div className="flex items-start gap-3">
-          <MapPin className="h-5 w-5 mt-1 text-primary" />
-          <div>
-            <h3 className="font-medium text-sm sm:text-base">Address</h3>
-            <p className="text-muted-foreground text-xs sm:text-sm">1800 S. Albert Pike Ave, Fort Smith, AR 72903</p>
-          </div>
-        </div>
-        <div className="flex items-start gap-3">
-          <Phone className="h-5 w-5 mt-1 text-primary" />
-          <div>
-            <h3 className="font-medium text-sm sm:text-base">Phone</h3>
-            <p className="text-muted-foreground text-xs sm:text-sm">479-783-2914</p>
-          </div>
-        </div>
-        <div className="flex items-start gap-3">
-          <Mail className="h-5 w-5 mt-1 text-primary" />
-          <div>
-            <h3 className="font-medium text-sm sm:text-base">Email</h3>
-            <p className="text-muted-foreground text-xs sm:text-sm">Sunnie.islamic.center@gmail.com</p>
-          </div>
-        </div>
-        <div className="flex items-start gap-3">
-          <Clock className="h-5 w-5 mt-1 text-primary" />
-          <div>
-            <h3 className="font-medium text-sm sm:text-base">Office Hours</h3>
-            <p className="text-muted-foreground text-xs sm:text-sm">Monday - Friday: 9:00 AM - 5:00 PM</p>
-            <p className="text-muted-foreground text-xs sm:text-sm">Saturday - Sunday: Closed</p>
-          </div>
-        </div>
-      </div>
-    </CardContent>
-  </Card>
+            <Card className="border-0 shadow-elegant overflow-hidden">
+              <CardHeader className="bg-primary text-primary-foreground">
+                <CardTitle>Contact Information</CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="h-5 w-5 mt-1 text-primary" />
+                    <div>
+                      <h3 className="font-medium text-sm sm:text-base">Address</h3>
+                      <p className="text-muted-foreground text-xs sm:text-sm">
+                        1800 S. Albert Pike Ave, Fort Smith, AR 72903
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Phone className="h-5 w-5 mt-1 text-primary" />
+                    <div>
+                      <h3 className="font-medium text-sm sm:text-base">Phone</h3>
+                      <p className="text-muted-foreground text-xs sm:text-sm">479-783-2914</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Mail className="h-5 w-5 mt-1 text-primary" />
+                    <div>
+                      <h3 className="font-medium text-sm sm:text-base">Email</h3>
+                      <p className="text-muted-foreground text-xs sm:text-sm">Sunnie.islamic.center@gmail.com</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Clock className="h-5 w-5 mt-1 text-primary" />
+                    <div>
+                      <h3 className="font-medium text-sm sm:text-base">Office Hours</h3>
+                      <p className="text-muted-foreground text-xs sm:text-sm">Monday - Friday: 9:00 AM - 5:00 PM</p>
+                      <p className="text-muted-foreground text-xs sm:text-sm">Saturday - Sunday: Closed</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Google Maps iframe with Padding */}
             <Card className="border-0 shadow-elegant overflow-hidden">
@@ -233,5 +291,6 @@ export default function ContactPage() {
         </div>
       </section>
     </div>
-  );
+  )
 }
+

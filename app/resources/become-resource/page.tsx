@@ -128,8 +128,34 @@ export default function BecomeResourcePage() {
       }
     }
 
-    // Execute both operations
-    Promise.all([saveToDatabase(), sendToGoogle()])
+    // Send confirmation emails
+    const sendEmails = async () => {
+      try {
+        const response = await fetch("/api/send-resource-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: values.name,
+            email: values.email,
+            phone: values.phone,
+            heading: values.heading,
+            description: values.description,
+          }),
+        })
+
+        if (!response.ok) {
+          console.error("Failed to send emails")
+        }
+      } catch (error) {
+        console.error("Error sending emails:", error)
+        // Continue even if email sending fails
+      }
+    }
+
+    // Execute all operations
+    Promise.all([saveToDatabase(), sendToGoogle(), sendEmails()])
       .then(() => {
         setIsSubmitting(false)
         setIsSubmitted(true)
